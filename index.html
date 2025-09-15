@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Name</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Georgia, serif;
+            line-height: 1.7;
+            color: #333;
+            background: #fafafa;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px 50px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .nav-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+        
+        .nav-title {
+            font-size: 1.8em;
+            font-weight: normal;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .nav-links {
+            font-size: 1.05em;
+        }
+        
+        .nav-links a {
+            color: #2980b9;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+        
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .nav-links a.current {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .header {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .profile-photo {
+            width: 180px;
+            height: 220px;
+            background: #e0e0e0;
+            border: 1px solid #ddd;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+            text-align: center;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+        
+        .header-info {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        h1 {
+            font-size: 2.2em;
+            font-weight: normal;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .divider {
+            height: 1px;
+            background: #333;
+            margin: 10px 0 15px 0;
+        }
+        
+        .affiliation {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        .contact-links {
+            font-size: 0.95em;
+            line-height: 1.8;
+        }
+        
+        .contact-links a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        
+        .contact-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .bio {
+            font-size: 1.05em;
+            margin-bottom: 35px;
+            text-align: justify;
+        }
+        
+        h2 {
+            font-size: 1.4em;
+            font-weight: normal;
+            margin: 35px 0 15px 0;
+            color: #2c3e50;
+        }
+        
+        .section-content {
+            font-size: 1.05em;
+            margin-bottom: 25px;
+            text-align: justify;
+        }
+        
+        .projects-list {
+            margin: 20px 0;
+        }
+        
+        .projects-list li {
+            margin-bottom: 8px;
+            list-style: none;
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        .projects-list li:before {
+            content: "-";
+            position: absolute;
+            left: 0;
+        }
+        
+        .project-name {
+            font-weight: bold;
+        }
+        
+        .project-link {
+            color: #2980b9;
+            text-decoration: none;
+        }
+        
+        .project-link:hover {
+            text-decoration: underline;
+        }
+        
+        .experience-list {
+            margin: 20px 0;
+        }
+        
+        .experience-item {
+            margin-bottom: 12px;
+            list-style: none;
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        .experience-item:before {
+            content: "-";
+            position: absolute;
+            left: 0;
+        }
+        
+        .experience-title {
+            font-weight: bold;
+        }
+        
+        .experience-detail {
+            color: #555;
+        }
+        
+        .activities {
+            font-size: 1.05em;
+        }
+        
+        .activities ul {
+            margin: 15px 0;
+            padding-left: 0;
+        }
+        
+        .activities li {
+            margin-bottom: 6px;
+            list-style: none;
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        .activities li:before {
+            content: "-";
+            position: absolute;
+            left: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 25px;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .profile-photo {
+                width: 150px;
+                height: 180px;
+            }
+            
+            .header-info {
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .nav-links a {
+                margin: 0 8px;
+                font-size: 0.95em;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-header">
+            <div class="nav-title">Your Name</div>
+            <div class="nav-links">
+                <a href="index.html" class="current">Home</a>
+                <a href="pages/projects.html">Projects</a>
+                <a href="pages/publications.html">Publications</a>
+                <a href="pages/teaching.html">Teaching</a>
+                <a href="pages/faq.html">FAQ</a>
+            </div>
+        </div>
+        
+        <div class="header">
+            <div class="profile-photo">
+                <!-- Replace with your actual image -->
+                <img src="images/profile.jpg" alt="Your Name" style="display: none;" onerror="this.style.display='none'; this.parentNode.innerHTML='Your Photo Here<br>(180x220px)<br><br>Place your image in:<br>images/profile.jpg';">
+                Your Photo Here<br>(180x220px)<br><br>Place your image in:<br>images/profile.jpg
+            </div>
+            <div class="header-info">
+                <h1>Your Name</h1>
+                <div class="divider"></div>
+                <div class="affiliation">Your University or Institution</div>
+                <div class="contact-links">
+                    Email: your.email at university dot edu<br>
+                    Google Scholar: <a href="#">Your Name</a><br>
+                    Github: <a href="#">@yourusername</a><br>
+                    Twitter: <a href="#">@yourusername</a><br>
+                    Office: Building Room Number
+                </div>
+            </div>
+        </div>
+        
+        <div class="bio">
+            I am a [Position] in the <a href="#">Department Name</a> at <a href="#">University Name</a>. 
+            I am also a [Role] at [Company/Organization].
+            
+            I recently received my Ph.D. from [University], where I was advised by <a href="#">Professor Name</a>. 
+            I also worked closely with <a href="#">Professor 2</a> and <a href="#">Professor 3</a>. 
+            I was a member of <a href="#">Lab Name</a>.
+            
+            I received my Master's and Bachelor's degree from [University] in [Department].
+        </div>
+        
+        <h2>Research</h2>
+        <div class="section-content">
+            I am interested in [your research areas]. I like to [describe your approach or philosophy]. 
+            We are working on exciting problems across [your research spectrum] together at 
+            <a href="#">Your Lab/Group Name</a>.
+            
+            I am a believer of open source and open science. My group focuses on [your focus areas] and building 
+            [type of systems/tools] that are widely adopted. Here are the [systems/projects] that I started:
+        </div>
+        
+        <ul class="projects-list">
+            <li><a href="#" class="project-link project-name">Project One</a> - Brief description of your first major project.</li>
+            <li><a href="#" class="project-link project-name">Project Two</a> - Brief description of your second major project.</li>
+            <li><a href="#" class="project-link project-name">Project Three</a> - Brief description of your third major project.</li>
+            <li><a href="#" class="project-link project-name">Project Four</a> - Brief description of your fourth major project.</li>
+        </ul>
+        
+        <h2>Activity and Services</h2>
+        <div class="activities">
+            <ul>
+                <li>Role, Conference Name.</li>
+                <li>PC Chair, Conference 2024.</li>
+                <li>Area Chair, Conference Name.</li>
+                <li>PC member of Conference Name.</li>
+                <li>Reviewer for Journal Names.</li>
+            </ul>
+        </div>
+        
+        <h2>Information</h2>
+        <div class="section-content">
+            Prospective students: <a href="pages/faq.html">FAQ</a>
+        </div>
+        
+        <h2>Experience</h2>
+        <ul class="experience-list">
+            <li class="experience-item">
+                <span class="experience-title">Current University, present</span> 
+                <span class="experience-detail">Current Position</span>
+            </li>
+            <li class="experience-item">
+                <span class="experience-title">Company Name, present</span> 
+                <span class="experience-detail">Current Industry Role</span>
+            </li>
+            <li class="experience-item">
+                <span class="experience-title">Previous Company, 2020 - 2024</span> 
+                <span class="experience-detail">Previous Role</span>
+            </li>
+            <li class="experience-item">
+                <span class="experience-title">University Name, 2018 - 2023</span> 
+                <span class="experience-detail">Ph.D. student with <a href="#">Professor Name</a></span>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>
