@@ -15,49 +15,60 @@
             font-family: Georgia, serif;
             line-height: 1.7;
             color: #333;
-            background: #fafafa;
-            padding: 40px 20px;
+            background: white;
+            padding: 0;
+            margin: 0;
         }
         
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            width: 100%;
+            margin: 0;
             background: white;
-            padding: 40px 50px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 85px 50px 40px 50px;
         }
         
         .nav-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: #1a252f;
+            padding: 15px 40px;
+            border-bottom: none;
+            width: 100%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .nav-title {
-            font-size: 1.8em;
+            font-size: 1.6em;
             font-weight: normal;
-            margin-bottom: 15px;
-            color: #2c3e50;
+            margin: 0;
+            color: white;
         }
         
         .nav-links {
-            font-size: 1.05em;
+            font-size: 1em;
         }
         
         .nav-links a {
-            color: #2980b9;
+            color: #ecf0f1;
             text-decoration: none;
-            margin: 0 15px;
+            margin: 0 12px;
+            transition: color 0.3s ease;
         }
         
         .nav-links a:hover {
-            text-decoration: underline;
+            color: #3498db;
+            text-decoration: none;
         }
         
         .nav-links a.current {
             font-weight: bold;
-            color: #2c3e50;
+            color: #e74c3c;
         }
         
         h1 {
@@ -145,7 +156,23 @@
         
         @media (max-width: 768px) {
             .container {
-                padding: 30px 25px;
+                padding: 70px 25px 30px 25px;
+            }
+            
+            .nav-header {
+                padding: 12px 20px;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .nav-title {
+                font-size: 1.4em;
+            }
+            
+            .nav-links a {
+                margin: 0 8px;
+                font-size: 0.9em;
             }
             
             .nav-links a {
@@ -162,11 +189,10 @@
 <body>
     <div class="container">
         <div class="nav-header">
-            <div class="nav-title">Your Name</div>
+            <div class="nav-title">Zhihao Shu</div>
             <div class="nav-links">
                 <a href="../index.html">Home</a>
-                <a href="projects.html">Projects</a>
-                <a href="publications.html">Publications</a>
+                <a href="notes.html">Notes</a>
                 <a href="teaching.html" class="current">Teaching</a>
                 <a href="faq.html">FAQ</a>
             </div>
@@ -177,26 +203,22 @@
         <div class="teaching-philosophy">
             <div class="philosophy-title">Teaching Philosophy</div>
             <p>
-                I believe in hands-on learning combined with strong theoretical foundations. My teaching approach 
-                emphasizes practical applications while ensuring students understand the underlying principles. 
-                I strive to create an inclusive learning environment where students feel comfortable asking questions 
-                and exploring ideas through both individual and collaborative work.
+                From my experience, I believe the best the way of learning a new skill is to practice it by doing real projects, while understanding the underlying principles.
+                Do not be afraid to make mistakes, as they are valuable learning opportunities. 干就完了！干完了记得总结。
             </p>
         </div>
         
-        <div class="semester-section">
-            <div class="semester-header">Spring 2024</div>
+        <!-- <div class="semester-section">
+            <div class="semester-header">Spring --</div>
             
             <div class="course">
-                <div class="course-title">Advanced Machine Learning Systems</div>
-                <div class="course-number">CS 15-xxx</div>
+                <div class="course-title">xxxx</div>
+                <div class="course-number">CS xxxx</div>
                 <div class="course-description">
-                    This graduate-level course covers the design and implementation of machine learning systems 
-                    at scale. Topics include distributed training, model deployment, optimization techniques, 
-                    and performance evaluation of ML systems.
+                    xxxxx
                 </div>
                 <div class="course-details">
-                    Enrollment: 45 students | Graduate level | 3 credit hours
+                    xxx
                 </div>
                 <div class="course-links">
                     <a href="#">Course Website</a>
@@ -204,91 +226,8 @@
                     <a href="#">Lecture Notes</a>
                 </div>
             </div>
-        </div>
+        </div> -->
         
-        <div class="semester-section">
-            <div class="semester-header">Fall 2023</div>
-            
-            <div class="course">
-                <div class="course-title">Introduction to Data Science</div>
-                <div class="course-number">CS 15-xxx</div>
-                <div class="course-description">
-                    An introductory course covering fundamental concepts in data science including data 
-                    collection, cleaning, analysis, and visualization. Students learn practical skills 
-                    using Python and popular data science libraries.
-                </div>
-                <div class="course-details">
-                    Enrollment: 120 students | Undergraduate level | 3 credit hours
-                </div>
-                <div class="course-links">
-                    <a href="#">Course Website</a>
-                    <a href="#">Assignments</a>
-                    <a href="#">Projects</a>
-                </div>
-            </div>
-            
-            <div class="course">
-                <div class="course-title">Systems for Machine Learning</div>
-                <div class="course-number">CS 15-xxx</div>
-                <div class="course-description">
-                    Advanced course focusing on the systems aspects of machine learning, including 
-                    distributed computing, GPU programming, and optimization of ML workloads.
-                </div>
-                <div class="course-details">
-                    Enrollment: 35 students | Graduate level | 3 credit hours
-                </div>
-                <div class="course-links">
-                    <a href="#">Course Website</a>
-                    <a href="#">Final Projects</a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="semester-section">
-            <div class="semester-header">Spring 2023</div>
-            
-            <div class="course">
-                <div class="course-title">Machine Learning Fundamentals</div>
-                <div class="course-number">CS 15-xxx</div>
-                <div class="course-description">
-                    Core machine learning course covering supervised and unsupervised learning algorithms, 
-                    statistical learning theory, and practical implementation techniques.
-                </div>
-                <div class="course-details">
-                    Enrollment: 80 students | Undergraduate/Graduate level | 3 credit hours
-                </div>
-                <div class="course-links">
-                    <a href="#">Course Archive</a>
-                    <a href="#">Student Feedback</a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="semester-section">
-            <div class="semester-header">Teaching Assistance & Mentoring</div>
-            
-            <div class="course">
-                <div class="course-title">Graduate Student Mentoring</div>
-                <div class="course-description">
-                    Currently advising 8 PhD students and 12 Master's students on research projects 
-                    spanning machine learning systems, distributed computing, and AI applications.
-                </div>
-                <div class="course-details">
-                    Ongoing mentoring relationships with focus on research methodology and career development
-                </div>
-            </div>
-            
-            <div class="course">
-                <div class="course-title">Undergraduate Research Program</div>
-                <div class="course-description">
-                    Supervising undergraduate research assistants through independent study programs 
-                    and summer research opportunities.
-                </div>
-                <div class="course-details">
-                    15+ undergraduate researchers mentored | Several publications co-authored
-                </div>
-            </div>
-        </div>
     </div>
 </body>
 </html>

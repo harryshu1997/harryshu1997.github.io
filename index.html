@@ -15,81 +15,98 @@
             font-family: Georgia, serif;
             line-height: 1.7;
             color: #333;
-            background: #fafafa;
-            padding: 40px 20px;
+            background: white;
+            padding: 0;
+            margin: 0;
         }
         
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            width: 100%;
+            margin: 0;
             background: white;
-            padding: 40px 50px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 85px 50px 40px 50px;
         }
         
         .nav-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: #1a252f;
+            padding: 15px 40px;
+            border-bottom: none;
+            width: 100%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .nav-title {
-            font-size: 1.8em;
+            font-size: 1.6em;
             font-weight: normal;
-            margin-bottom: 15px;
-            color: #2c3e50;
+            margin: 0;
+            color: white;
         }
         
         .nav-links {
-            font-size: 1.05em;
+            font-size: 1em;
         }
         
         .nav-links a {
-            color: #2980b9;
+            color: #ecf0f1;
             text-decoration: none;
-            margin: 0 15px;
+            margin: 0 12px;
+            transition: color 0.3s ease;
         }
         
         .nav-links a:hover {
-            text-decoration: underline;
+            color: #3498db;
+            text-decoration: none;
         }
         
         .nav-links a.current {
             font-weight: bold;
-            color: #2c3e50;
+            color: #e74c3c;
         }
         
         .header {
             display: flex;
-            align-items: flex-start;
-            gap: 30px;
+            align-items: center;
+            gap: 40px;
             margin-bottom: 30px;
-            flex-wrap: wrap;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
         
         .profile-photo {
-            width: 180px;
-            height: 220px;
-            background: #e0e0e0;
-            border: 1px solid #ddd;
+            width: 140px;
+            height: 140px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
             flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #999;
-            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
             text-align: center;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            overflow: hidden;
         }
         
         .profile-photo img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 2px;
+            border-radius: 50%;
         }
         
         .header-info {
@@ -98,35 +115,41 @@
         }
         
         h1 {
-            font-size: 2.2em;
+            font-size: 2.5em;
             font-weight: normal;
-            margin-bottom: 5px;
-            color: #2c3e50;
+            margin-bottom: 8px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
         .divider {
-            height: 1px;
-            background: #333;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.4);
             margin: 10px 0 15px 0;
+            border-radius: 1px;
         }
         
         .affiliation {
-            font-size: 1.1em;
+            font-size: 1.2em;
             margin-bottom: 15px;
-            color: #555;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
         }
         
         .contact-links {
             font-size: 0.95em;
             line-height: 1.8;
+            color: rgba(255, 255, 255, 0.9);
         }
         
         .contact-links a {
-            color: #2980b9;
+            color: #FFE082;
             text-decoration: none;
+            transition: color 0.3s ease;
         }
         
         .contact-links a:hover {
+            color: #FFF176;
             text-decoration: underline;
         }
         
@@ -228,18 +251,36 @@
         
         @media (max-width: 768px) {
             .container {
-                padding: 30px 25px;
+                padding: 70px 25px 30px 25px;
+            }
+            
+            .nav-header {
+                padding: 12px 20px;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .nav-title {
+                font-size: 1.4em;
+            }
+            
+            .nav-links a {
+                margin: 0 8px;
+                font-size: 0.9em;
             }
             
             .header {
                 flex-direction: column;
                 align-items: center;
                 text-align: center;
+                padding: 25px 20px;
+                gap: 20px;
             }
             
             .profile-photo {
-                width: 150px;
-                height: 180px;
+                width: 120px;
+                height: 120px;
             }
             
             .header-info {
@@ -247,13 +288,53 @@
                 width: 100%;
             }
             
+            h1 {
+                font-size: 2em;
+            }
+            
             .nav-links a {
                 margin: 0 8px;
                 font-size: 0.95em;
             }
+        }
+        
+        @media (max-width: 640px) {
+            .nav-header {
+                margin: -30px -25px 30px -25px;
+                padding: 15px 20px;
+            }
+            
+            .nav-title {
+                font-size: 1.5em;
+                margin-bottom: 12px;
+            }
+            
+            .nav-links a {
+                margin: 0 6px;
+                font-size: 0.9em;
+            }
+            
+            .header {
+                flex-direction: column;
+                padding: 20px 15px;
+                text-align: center;
+            }
+            
+            .profile-photo {
+                width: 100px;
+                height: 100px;
+            }
             
             h1 {
                 font-size: 1.8em;
+            }
+            
+            .affiliation {
+                font-size: 1.1em;
+            }
+            
+            .contact-links {
+                font-size: 0.9em;
             }
         }
     </style>
@@ -261,11 +342,10 @@
 <body>
     <div class="container">
         <div class="nav-header">
-            <div class="nav-title">Your Name</div>
+            <div class="nav-title">Zhihao Shu</div>
             <div class="nav-links">
                 <a href="index.html" class="current">Home</a>
-                <a href="pages/projects.html">Projects</a>
-                <a href="pages/publications.html">Publications</a>
+                <a href="pages/notes.html">Notes</a>
                 <a href="pages/teaching.html">Teaching</a>
                 <a href="pages/faq.html">FAQ</a>
             </div>
@@ -273,85 +353,70 @@
         
         <div class="header">
             <div class="profile-photo">
-                <!-- Replace with your actual image -->
-                <img src="images/profile.jpg" alt="Your Name" style="display: none;" onerror="this.style.display='none'; this.parentNode.innerHTML='Your Photo Here<br>(180x220px)<br><br>Place your image in:<br>images/profile.jpg';">
-                Your Photo Here<br>(180x220px)<br><br>Place your image in:<br>images/profile.jpg
+                <img src="images/profile.jpg" alt="Zhihao Shu">
             </div>
             <div class="header-info">
-                <h1>Your Name</h1>
+                <h1>Zhihao Shu</h1>
                 <div class="divider"></div>
-                <div class="affiliation">Your University or Institution</div>
+                <div class="affiliation">University of Georgia</div>
                 <div class="contact-links">
-                    Email: your.email at university dot edu<br>
-                    Google Scholar: <a href="#">Your Name</a><br>
-                    Github: <a href="#">@yourusername</a><br>
-                    Twitter: <a href="#">@yourusername</a><br>
-                    Office: Building Room Number
+                    Email: Zhihao.Shu@uga.edu<br>
+                    Google Scholar: <a href="https://scholar.google.com/citations?user=dkxKQq0AAAAJ&hl=en">Zhihao Shu</a><br>
+                    Github: <a href="https://github.com/harryshu1997">@harryshu1997</a><br>
+                    Office: Boyd Research Building 612
                 </div>
             </div>
         </div>
         
         <div class="bio">
-            I am a [Position] in the <a href="#">Department Name</a> at <a href="#">University Name</a>. 
-            I am also a [Role] at [Company/Organization].
-            
-            I recently received my Ph.D. from [University], where I was advised by <a href="#">Professor Name</a>. 
-            I also worked closely with <a href="#">Professor 2</a> and <a href="#">Professor 3</a>. 
-            I was a member of <a href="#">Lab Name</a>.
-            
-            I received my Master's and Bachelor's degree from [University] in [Department].
+            I am a Ph.D student in the <a href="https://computing.uga.edu/">School of Computing</a> at UGA.   
+        
+            I received my Master's and Bachelor's degree from NYU Courant and UW-Madison+UD.
         </div>
         
         <h2>Research</h2>
         <div class="section-content">
-            I am interested in [your research areas]. I like to [describe your approach or philosophy]. 
-            We are working on exciting problems across [your research spectrum] together at 
-            <a href="#">Your Lab/Group Name</a>.
+            I am interested in VR/AR, AI, and edge computing. Nothing fancy, Just Do It. 
+            I am working on exciting problems across LLM and accelerating AI inference at the edge.
             
-            I am a believer of open source and open science. My group focuses on [your focus areas] and building 
-            [type of systems/tools] that are widely adopted. Here are the [systems/projects] that I started:
         </div>
         
         <ul class="projects-list">
-            <li><a href="#" class="project-link project-name">Project One</a> - Brief description of your first major project.</li>
-            <li><a href="#" class="project-link project-name">Project Two</a> - Brief description of your second major project.</li>
-            <li><a href="#" class="project-link project-name">Project Three</a> - Brief description of your third major project.</li>
-            <li><a href="#" class="project-link project-name">Project Four</a> - Brief description of your fourth major project.</li>
+            <li><a href="https://neurips.cc/virtual/2024/poster/93845" class="project-link project-name">Real-time Core-Periphery Guided ViT with Smart Data Layout Selection on Mobile Devices</a> - NeurIPS 2024. Zhihao Shu, Xiaowei Yu, Zihao Wu, Wenqi Jia, Yinchen Shi, Miao Yin, Tianming Liu, Dajiang Zhu, Wei Niu.</li>
+            <li><a href="https://arxiv.org/abs/2412.12444" class="project-link project-name">LazyDiT: Lazy Learning for the Acceleration of Diffusion Transformers</a> - AAAI 2025. Xuan Shen, Zhao Song, Yufa Zhou, Bo Chen, Yanyu Li, Yifan Gong, Kai Zhang, Hao Tan, Jason Kuen, Henghui Ding, Zhihao Shu, Wei Niu, Pu Zhao, Yanzhi Wang, Jiuxiang Gu.</li>
+            <li><a href="https://arxiv.org/html/2402.10787v1" class="project-link project-name">EdgeQAT: Entropy and Distribution Guided Quantization-Aware Training for the Acceleration of Lightweight LLMs on the Edge</a> - ArXiv. Xuan Shen, Zhenglun Kong, Changdi Yang, Zhaoyang Han, Lei Lu, Peiyan Dong, Cheng Lyu, Chih-hsiang Li, Xuehang Guo, Zhihao Shu, Wei Niu, Miriam Leeser, Pu Zhao, Yanzhi Wang.</li>
+            <li><a href="https://arxiv.org/abs/2404.13528" class="project-link project-name">SmartMem: Layout Transformation Elimination and Adaptation for Efficient DNN Execution on Mobile</a> - ASPLOS 2024. Wei Niu, Md Musfiqur Rahman Sanim, Zhihao Shu, Jiexiong Guan, Xipeng Shen, Miao Yin, Gagan Agrawal, Bin Ren.</li>
         </ul>
         
         <h2>Activity and Services</h2>
         <div class="activities">
             <ul>
-                <li>Role, Conference Name.</li>
-                <li>PC Chair, Conference 2024.</li>
-                <li>Area Chair, Conference Name.</li>
-                <li>PC member of Conference Name.</li>
-                <li>Reviewer for Journal Names.</li>
+                <li>Reviewer for NeurIPS 2025.</li>
+                <li>Reviewer for AAAI 2025.</li>
+                <li>Reviewer for IEEE MASS 2024.</li>
+                <li>Reviewer and Artifact Evaluator for PPoPP 2024.</li>
+                <li>PC Memeber for ICCD 2025.</li>
             </ul>
         </div>
         
         <h2>Information</h2>
         <div class="section-content">
-            Prospective students: <a href="pages/faq.html">FAQ</a>
+            Fun things: <a href="pages/faq.html">FAQ</a>
         </div>
         
         <h2>Experience</h2>
         <ul class="experience-list">
             <li class="experience-item">
-                <span class="experience-title">Current University, present</span> 
-                <span class="experience-detail">Current Position</span>
+                <span class="experience-title">UGA, present</span> 
+                <span class="experience-detail">Ph.D. Student with <a href="https://newway99.gitlab.io/">Dr. Niu</a></span>
             </li>
             <li class="experience-item">
-                <span class="experience-title">Company Name, present</span> 
-                <span class="experience-detail">Current Industry Role</span>
+                <span class="experience-title">Robotrak Technologies, Jun 2021 - Aug. 2021 | Jun 2020 - Aug. 2020</span> 
+                <span class="experience-detail">Software Engineer Intern</span>
             </li>
             <li class="experience-item">
-                <span class="experience-title">Previous Company, 2020 - 2024</span> 
-                <span class="experience-detail">Previous Role</span>
-            </li>
-            <li class="experience-item">
-                <span class="experience-title">University Name, 2018 - 2023</span> 
-                <span class="experience-detail">Ph.D. student with <a href="#">Professor Name</a></span>
+                <span class="experience-title">(NYU Shanghai) Teaching Assistant, Jun 2020 - Aug 2020</span> 
+                <span class="experience-detail">Block Chain && Distributed Computing TA</span>
             </li>
         </ul>
     </div>

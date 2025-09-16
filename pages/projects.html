@@ -15,30 +15,39 @@
             font-family: Georgia, serif;
             line-height: 1.7;
             color: #333;
-            background: #fafafa;
-            padding: 40px 20px;
+            background: white;
+            padding: 0;
+            margin: 0;
         }
         
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            width: 100%;
+            margin: 0;
             background: white;
-            padding: 40px 50px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 100px 50px 40px 50px;
         }
         
         .nav-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: #2c3e50;
+            padding: 20px 50px;
+            border-bottom: none;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .nav-title {
             font-size: 1.8em;
             font-weight: normal;
-            margin-bottom: 15px;
-            color: #2c3e50;
+            margin: 0;
+            color: white;
         }
         
         .nav-links {
@@ -46,18 +55,20 @@
         }
         
         .nav-links a {
-            color: #2980b9;
+            color: #ecf0f1;
             text-decoration: none;
             margin: 0 15px;
+            transition: color 0.3s ease;
         }
         
         .nav-links a:hover {
-            text-decoration: underline;
+            color: #3498db;
+            text-decoration: none;
         }
         
         .nav-links a.current {
             font-weight: bold;
-            color: #2c3e50;
+            color: #e74c3c;
         }
         
         h1 {
@@ -125,7 +136,23 @@
         
         @media (max-width: 768px) {
             .container {
-                padding: 30px 25px;
+                padding: 80px 25px 30px 25px;
+            }
+            
+            .nav-header {
+                padding: 15px 25px;
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .nav-title {
+                font-size: 1.5em;
+            }
+            
+            .nav-links a {
+                margin: 0 8px;
+                font-size: 0.95em;
             }
             
             .nav-links a {
@@ -146,7 +173,6 @@
             <div class="nav-links">
                 <a href="../index.html">Home</a>
                 <a href="projects.html" class="current">Projects</a>
-                <a href="publications.html">Publications</a>
                 <a href="teaching.html">Teaching</a>
                 <a href="faq.html">FAQ</a>
             </div>

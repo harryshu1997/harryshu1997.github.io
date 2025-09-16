@@ -15,49 +15,60 @@
             font-family: Georgia, serif;
             line-height: 1.7;
             color: #333;
-            background: #fafafa;
-            padding: 40px 20px;
+            background: white;
+            padding: 0;
+            margin: 0;
         }
         
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            width: 100%;
+            margin: 0;
             background: white;
-            padding: 40px 50px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 85px 50px 40px 50px;
         }
         
         .nav-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: #1a252f;
+            padding: 15px 40px;
+            border-bottom: none;
+            width: 100%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .nav-title {
-            font-size: 1.8em;
+            font-size: 1.6em;
             font-weight: normal;
-            margin-bottom: 15px;
-            color: #2c3e50;
+            margin: 0;
+            color: white;
         }
         
         .nav-links {
-            font-size: 1.05em;
+            font-size: 1em;
         }
         
         .nav-links a {
-            color: #2980b9;
+            color: #ecf0f1;
             text-decoration: none;
-            margin: 0 15px;
+            margin: 0 12px;
+            transition: color 0.3s ease;
         }
         
         .nav-links a:hover {
-            text-decoration: underline;
+            color: #3498db;
+            text-decoration: none;
         }
         
         .nav-links a.current {
             font-weight: bold;
-            color: #2c3e50;
+            color: #e74c3c;
         }
         
         h1 {
@@ -135,7 +146,23 @@
         
         @media (max-width: 768px) {
             .container {
-                padding: 30px 25px;
+                padding: 70px 25px 30px 25px;
+            }
+            
+            .nav-header {
+                padding: 12px 20px;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .nav-title {
+                font-size: 1.4em;
+            }
+            
+            .nav-links a {
+                margin: 0 8px;
+                font-size: 0.9em;
             }
             
             .nav-links a {
@@ -152,11 +179,10 @@
 <body>
     <div class="container">
         <div class="nav-header">
-            <div class="nav-title">Your Name</div>
+            <div class="nav-title">舒志豪</div>
             <div class="nav-links">
                 <a href="../index.html">Home</a>
-                <a href="projects.html">Projects</a>
-                <a href="publications.html">Publications</a>
+                <a href="notes.html">Notes</a>
                 <a href="teaching.html">Teaching</a>
                 <a href="faq.html" class="current">FAQ</a>
             </div>
@@ -174,87 +200,28 @@
             <div class="section-title">For Prospective PhD Students</div>
             
             <div class="faq-item">
-                <div class="question">Are you accepting new PhD students?</div>
-                <div class="answer">
-                    Yes, I am actively looking for motivated PhD students to join my research group. 
-                    I typically admit 2-3 new PhD students each year. Please see the application 
-                    requirements below and feel free to reach out if you're interested in working together.
-                </div>
-            </div>
-            
-            <div class="faq-item">
                 <div class="question">What research areas are you most interested in?</div>
                 <div class="answer">
-                    My primary research interests include machine learning systems, distributed computing, 
+                    My primary research interests include machine learning systems, parrallel computing, 
                     and AI applications. I'm particularly excited about projects that bridge theory and 
-                    practice, and that have potential for real-world impact. Check out my 
-                    <a href="projects.html">projects page</a> for specific examples of current work.
+                    practice, and that have potential for real-world impact.
                 </div>
-            </div>
-            
-            <div class="faq-item">
-                <div class="question">What should I include in my application email?</div>
-                <div class="answer">
-                    Please include: (1) A brief introduction of yourself and your background, 
-                    (2) Your research interests and how they align with my work, (3) Your CV/resume, 
-                    (4) Any relevant publications or projects, (5) What specifically interests you 
-                    about working in my group. Please keep the email concise but informative.
-                </div>
-            </div>
-            
-            <div class="faq-item">
-                <div class="question">Do you accept students without prior ML/systems experience?</div>
-                <div class="answer">
-                    Strong mathematical background and programming skills are essential, but I welcome 
-                    students from diverse academic backgrounds. What matters most is motivation, 
-                    willingness to learn, and demonstrated ability to tackle challenging problems.
-                </div>
-            </div>
+            </div>        
+
         </div>
         
-        <div class="faq-section">
-            <div class="section-title">For Current Students</div>
-            
-            <div class="faq-item">
-                <div class="question">How often do you meet with your students?</div>
-                <div class="answer">
-                    I typically meet with each student weekly during active research periods. 
-                    We also have group meetings bi-weekly where students present their work 
-                    and get feedback from peers. I maintain an open-door policy for urgent questions.
-                </div>
-            </div>
-            
-            <div class="faq-item">
-                <div class="question">What are your expectations for PhD students?</div>
-                <div class="answer">
-                    I expect students to be proactive, curious, and committed to rigorous research. 
-                    This includes reading relevant literature, conducting careful experiments, 
-                    communicating results clearly, and contributing to the research community 
-                    through publications and open-source software.
-                </div>
-            </div>
-        </div>
         
         <div class="faq-section">
             <div class="section-title">For Collaborators & Industry Partners</div>
             
             <div class="faq-item">
-                <div class="question">Are you available for consulting or collaboration?</div>
+                <div class="question">Are you available for collaboration?</div>
                 <div class="answer">
-                    I'm selective about consulting opportunities but am interested in collaborations 
-                    that align with my research interests and can benefit my students. Please reach out 
-                    with specific details about the project and timeline.
+                    I am open to collaboration opportunities that align with my research interests. Please 
+                    reach out with specific details about the project and timeline. My interests are AI, MLSys, VR, AR, and MetaVerse.
                 </div>
             </div>
             
-            <div class="faq-item">
-                <div class="question">Do you give talks at conferences or companies?</div>
-                <div class="answer">
-                    Yes, I regularly give invited talks about my research. I'm particularly interested 
-                    in speaking at venues where I can share our latest work and engage with the community. 
-                    Please provide details about the event, audience, and timing when reaching out.
-                </div>
-            </div>
         </div>
         
         <div class="faq-section">
@@ -263,28 +230,19 @@
             <div class="faq-item">
                 <div class="question">How did you get into your field?</div>
                 <div class="answer">
-                    My path into machine learning and systems research began during my undergraduate 
-                    studies when I became fascinated by the intersection of mathematics, computer science, 
-                    and real-world applications. The field has evolved tremendously, and I'm excited 
-                    to continue contributing to its development.
+                    说来也神奇，我在本科的时候误打误撞的就开始做手机相关的app开发，后来又在学校学习ai相关的课程，最后在研究生毕业前比较迷茫，又刚好碰上最难
+                    找工作的时间段。那时候，本来某大公司已经给了offer结果又说head count没了，比较无语，再加上自己本身也想着读博，因为想学点真功夫，毕竟打工是
+                    最没前途的。后来就碰上了现在的神仙导师，被导师带飞了，说来还是命运的安排，总的来说还算幸运吧😄。
                 </div>
             </div>
             
-            <div class="faq-item">
-                <div class="question">What advice do you have for students interested in research?</div>
-                <div class="answer">
-                    Start early by reading papers, attending seminars, and working on projects. 
-                    Don't be afraid to reach out to faculty whose work interests you. Build strong 
-                    fundamentals in mathematics and programming. Most importantly, be persistent 
-                    and passionate about solving meaningful problems.
-                </div>
-            </div>
+
         </div>
         
         <div class="contact-info">
             <div class="contact-title">Still have questions?</div>
-            <p>Feel free to reach out via email: your.email at university dot edu</p>
-            <p>I typically respond within 2-3 business days.</p>
+            <p>Feel free to reach out via email: Zhihao.Shu@uga.edu</p>
+            <p>Wechat: harrybadman</p>
         </div>
     </div>
 </body>
