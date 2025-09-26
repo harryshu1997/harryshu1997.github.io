@@ -34,43 +34,6 @@ Personal_Website/
 <img src="images/your-image.jpg" alt="描述">
 ```
 
-## 自定义您的网站
-
-### 1. 更新个人信息
-编辑 `index.html` 文件，替换：
-- "Your Name" 为您的真实姓名
-- "Your University or Institution" 为您的机构
-- 联系信息（邮箱、Google Scholar、GitHub等）
-- 个人简介和研究兴趣
-
-### 2. 添加项目
-编辑 `pages/projects.html`：
-- 替换示例项目为您的真实项目
-- 添加项目链接和描述
-
-### 3. 添加论文
-编辑 `pages/publications.html`：
-- 添加您的发表论文
-- 更新引用统计
-
-### 4. 更新教学信息
-编辑 `pages/teaching.html`：
-- 添加您教授的课程
-- 更新教学理念
-
-### 5. 自定义FAQ
-编辑 `pages/faq.html`：
-- 根据您的情况调整常见问题
-
-## 导航菜单
-
-网站包含以下页面：
-- **Home**: 主页，包含个人简介和研究概述
-- **Projects**: 项目展示页面
-- **Publications**: 论文发表页面  
-- **Teaching**: 教学经历页面
-- **FAQ**: 常见问题页面
-
 ## 部署
 
 ## 部署到 GitHub Pages
@@ -209,19 +172,3 @@ dig www.yourdomain.com CNAME
 - Netlify
 - Vercel
 - AWS S3
-
-## 技术特性
-
-- 响应式设计，在手机和电脑上都能良好显示
-- 清洁的学术风格
-- 易于自定义和维护
-- 无需数据库或后端
-- 快速加载
-
-## 注意事项
-
-- 所有链接都使用相对路径，便于本地测试和部署
-- 图片会自动缩放以适应容器
-- 支持所有现代浏览器
-
-如有问题，请检查文件路径是否正确，特别是图片文件的路径。
