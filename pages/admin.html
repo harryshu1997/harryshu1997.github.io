@@ -15,6 +15,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.5/dist/umd/supabase.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -890,7 +891,7 @@
                                     onkeydown="handleTabKey(event)"
                                 ></textarea>
                                 <div class="editor-actions">
-                                    <button type="button" class="btn btn-primary" onclick="savePost()">
+                                    <button type="button" id="savePostBtn" class="btn btn-primary" onclick="savePost()">
                                         💾 Save Page
                                     </button>
                                     <button type="button" class="btn btn-ai" onclick="improveWithAI()">
@@ -944,15 +945,17 @@
     <button id="chatToggle" class="chat-toggle" type="button" aria-label="Open AI assistant" onclick="toggleChat(true)">🤖</button>
 
         <script>
-            const ADMIN_PASSWORD = 'zhihao1997';
-            let isAuthenticated = false;
-            let posts = [];
-            let apiKey = localStorage.getItem('openaiApiKey') || '';
-            let isChatOpen = false;
+        const ADMIN_PASSWORD = 'zhihao1997';
+        const SUPABASE_URL = 'https://bmnwirsmmmhknbhvnuyb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtbndpcnNtbW1oa25iaHZudXliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NTQ3OTksImV4cCI6MjA3NDQzMDc5OX0.R-IWO_-i8Ih6WAz0V-ch4mgj1T-lNYWdHJrTeg4c9GE';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            document.addEventListener('DOMContentLoaded', () => {
-                posts = loadStoredPosts();
+        let isAuthenticated = false;
+        let posts = [];
+        let apiKey = localStorage.getItem('openaiApiKey') || '';
+        let isChatOpen = false;
 
+            document.addEventListener('DOMContentLoaded', async () => {
                 const apiKeyInput = document.getElementById('apiKey');
                 if (apiKeyInput) {
                     if (apiKey) {
@@ -968,7 +971,7 @@
                     isAuthenticated = true;
                 }
 
-                toggleAdminUI(isAuthenticated);
+                await toggleAdminUI(isAuthenticated);
                 initializeEditor();
                 handleEditorInput();
 
@@ -985,23 +988,10 @@
                 document.addEventListener('keydown', handleGlobalKeydown);
             });
 
-            function loadStoredPosts() {
-                const raw = localStorage.getItem('adminPosts');
-                if (!raw) return [];
-                try {
-                    const parsed = JSON.parse(raw);
-                    if (!Array.isArray(parsed)) return [];
-                    return parsed.map(normalizePost);
-                } catch (error) {
-                    console.warn('Failed to parse stored posts', error);
-                    return [];
-                }
-            }
-
             function normalizePost(post) {
                 if (!post || typeof post !== 'object') {
                     return {
-                        id: Date.now(),
+                        id: `post-${Date.now()}`,
                         title: 'Untitled',
                         content: '',
                         timestamp: Date.now(),
@@ -1010,19 +1000,20 @@
                     };
                 }
 
-                const timestamp = post.timestamp ? new Date(post.timestamp).getTime() : Date.now();
+                const createdAt = post.created_at ? new Date(post.created_at) : (post.timestamp ? new Date(post.timestamp) : new Date());
+                const timestamp = createdAt.getTime();
 
                 return {
-                    id: post.id || Date.now() + Math.random(),
+                    id: post.id || post.uuid || `post-${timestamp}`,
                     title: post.title || 'Untitled',
                     content: post.content || post.postContent || post.code || '',
                     timestamp,
-                    date: post.date || new Date(timestamp).toLocaleDateString(),
-                    image: post.image || null
+                    date: post.date || createdAt.toLocaleDateString(),
+                    image: post.image || post.cover_url || null
                 };
             }
 
-            function toggleAdminUI(authenticated) {
+            async function toggleAdminUI(authenticated) {
                 const authSection = document.getElementById('authSection');
                 const postForm = document.getElementById('postForm');
                 const postsSection = document.getElementById('postsSection');
@@ -1031,35 +1022,38 @@
                     if (authSection) authSection.style.display = 'none';
                     if (postForm) postForm.style.display = 'block';
                     if (postsSection) postsSection.style.display = 'block';
-                    loadPosts();
+                    await loadPosts(true);
                     handleEditorInput();
                 } else {
                     if (authSection) authSection.style.display = 'block';
                     if (postForm) postForm.style.display = 'none';
                     if (postsSection) postsSection.style.display = 'none';
+                    posts = [];
+                    const postsList = document.getElementById('postsList');
+                    if (postsList) postsList.innerHTML = '';
                 }
             }
 
-            function authenticate() {
+            async function authenticate() {
                 const passwordInput = document.getElementById('adminPassword');
                 const password = passwordInput ? passwordInput.value : '';
 
                 if (password === ADMIN_PASSWORD) {
                     isAuthenticated = true;
                     localStorage.setItem('isAdminAuthenticated', 'true');
-                    toggleAdminUI(true);
+                    await toggleAdminUI(true);
                     if (passwordInput) passwordInput.value = '';
                 } else {
                     alert('Incorrect password!');
                 }
             }
 
-            function logout() {
+            async function logout() {
                 isAuthenticated = false;
                 localStorage.removeItem('isAdminAuthenticated');
                 const passwordInput = document.getElementById('adminPassword');
                 if (passwordInput) passwordInput.value = '';
-                toggleAdminUI(false);
+                await toggleAdminUI(false);
             }
 
             function initializeEditor() {
@@ -1288,7 +1282,7 @@
             }
 
             function escapeHtml(text) {
-                return text
+                return String(text || '')
                     .replace(/&/g, '&amp;')
                     .replace(/</g, '&lt;')
                     .replace(/>/g, '&gt;')
@@ -1302,7 +1296,7 @@
                 codeBlocks.forEach(block => window.Prism.highlightElement(block));
             }
 
-            function savePost() {
+            async function savePost() {
                 if (!isAuthenticated) {
                     alert('Please authenticate first!');
                     return;
@@ -1310,6 +1304,7 @@
 
                 const titleInput = document.getElementById('postTitle');
                 const editor = document.getElementById('notionEditor');
+                const saveBtn = document.getElementById('savePostBtn');
                 if (!titleInput || !editor) return;
 
                 const title = titleInput.value.trim() || 'Untitled';
@@ -1320,73 +1315,117 @@
                     return;
                 }
 
-                const post = {
-                    id: Date.now(),
-                    title,
-                    content,
-                    timestamp: Date.now(),
-                    date: new Date().toLocaleDateString(),
-                    image: null
-                };
+                try {
+                    if (saveBtn) {
+                        saveBtn.textContent = '💾 Saving...';
+                        saveBtn.disabled = true;
+                    }
 
-                posts.unshift(post);
-                localStorage.setItem('adminPosts', JSON.stringify(posts));
-                loadPosts();
-                alert('Page saved successfully!');
+                    const { error } = await supabaseClient
+                        .from('posts')
+                        .insert([{ title, content }]);
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    await loadPosts(false);
+                    alert('Page saved successfully!');
+                    clearForm();
+                } catch (error) {
+                    console.error('Failed to save post:', error);
+                    alert('Error saving post: ' + error.message);
+                } finally {
+                    if (saveBtn) {
+                        saveBtn.textContent = '💾 Save Page';
+                        saveBtn.disabled = false;
+                    }
+                }
             }
 
-            function loadPosts() {
+            async function loadPosts(showLoading = false) {
                 const postsSection = document.getElementById('postsSection');
                 const postsList = document.getElementById('postsList');
                 if (!postsSection || !postsList) return;
 
-                postsList.innerHTML = '';
-
-                if (!posts.length) {
-                    postsList.innerHTML = '<p style="text-align: center; color: #666;">No pages yet. Start creating on the left!</p>';
-                    return;
+                if (showLoading) {
+                    postsList.innerHTML = '<p style="text-align: center; color: #666;">Loading posts...</p>';
                 }
 
-                posts.forEach(post => {
-                    const normalized = normalizePost(post);
-                    const postElement = document.createElement('div');
-                    postElement.className = 'post-item';
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('posts')
+                        .select('*')
+                        .order('created_at', { ascending: false });
 
-                    const rendered = renderNotionContent(normalized.content);
-                    const summary = renderSummaryContent(normalized.content);
-                    const summaryHtml = summary || '<p style="color:#7f8c8d; margin:0;">(No content)</p>';
-                    const fullHtml = rendered || '<p style="color:#7f8c8d; margin:0;">(No content)</p>';
-                    const postId = normalized.id;
-                    const postIdJson = JSON.stringify(postId);
+                    if (error) {
+                        throw error;
+                    }
 
-                    postElement.innerHTML = `
-                        <div class="post-title">${escapeHtml(normalized.title)}</div>
-                        <div class="post-meta">Created: ${escapeHtml(normalized.date)}</div>
-                        ${normalized.image ? `<img src="${normalized.image}" alt="Post image" class="post-image">` : ''}
-                        <div class="post-preview">
-                            <div class="post-summary" id="postSummary-${postId}">${summaryHtml}</div>
-                            <div class="post-full" id="postFull-${postId}">${fullHtml}</div>
-                        </div>
-                        <div class="post-actions">
-                            <button class="btn btn-secondary btn-small" id="toggleBtn-${postId}" onclick='togglePostContent(${postIdJson})'>View full</button>
-                            <button class="btn btn-outline btn-small" onclick='copyPostContent(${postIdJson})'>Copy content</button>
-                            <button class="btn btn-danger btn-small" onclick='deletePost(${postIdJson})'>Delete</button>
-                        </div>
-                    `;
+                    posts = (data || []).map(normalizePost);
 
-                    postsList.appendChild(postElement);
-                    highlightWithin(postElement);
-                });
+                    postsList.innerHTML = '';
+
+                    if (!posts.length) {
+                        postsList.innerHTML = '<p style="text-align: center; color: #666;">No pages yet. Start creating on the left!</p>';
+                        return;
+                    }
+
+                    posts.forEach(post => {
+                        const postElement = document.createElement('div');
+                        postElement.className = 'post-item';
+
+                        const rendered = renderNotionContent(post.content);
+                        const summary = renderSummaryContent(post.content);
+                        const summaryHtml = summary || '<p style="color:#7f8c8d; margin:0;">(No content)</p>';
+                        const fullHtml = rendered || '<p style="color:#7f8c8d; margin:0;">(No content)</p>';
+                        const postId = post.id;
+                        const postIdJson = JSON.stringify(postId);
+
+                        postElement.innerHTML = `
+                            <div class="post-title">${escapeHtml(post.title)}</div>
+                            <div class="post-meta">Created: ${escapeHtml(post.date)}</div>
+                            ${post.image ? `<img src="${post.image}" alt="Post image" class="post-image">` : ''}
+                            <div class="post-preview">
+                                <div class="post-summary" id="postSummary-${postId}">${summaryHtml}</div>
+                                <div class="post-full" id="postFull-${postId}">${fullHtml}</div>
+                            </div>
+                            <div class="post-actions">
+                                <button class="btn btn-secondary btn-small" id="toggleBtn-${postId}" onclick='togglePostContent(${postIdJson})'>View full</button>
+                                <button class="btn btn-outline btn-small" onclick='copyPostContent(${postIdJson})'>Copy content</button>
+                                <button class="btn btn-danger btn-small" onclick='deletePost(${postIdJson})'>Delete</button>
+                            </div>
+                        `;
+
+                        postsList.appendChild(postElement);
+                        highlightWithin(postElement);
+                    });
+                } catch (error) {
+                    console.error('Failed to load posts:', error);
+                    postsList.innerHTML = `<p style="color:#e74c3c; text-align:center;">Failed to load posts: ${escapeHtml(error.message)}</p>`;
+                }
             }
 
-            function deletePost(id) {
+            async function deletePost(id) {
                 if (!confirm('Are you sure you want to delete this page?')) {
                     return;
                 }
 
-                posts = posts.filter(post => String(post.id) !== String(id));
-                localStorage.setItem('adminPosts', JSON.stringify(posts));
-                loadPosts();
+                try {
+                    const { error } = await supabaseClient
+                        .from('posts')
+                        .delete()
+                        .eq('id', id);
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    await loadPosts(false);
+                } catch (error) {
+                    console.error('Failed to delete post:', error);
+                    alert('Error deleting post: ' + error.message);
+                }
             }
 
             function clearForm() {
