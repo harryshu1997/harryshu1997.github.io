@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zhihao Shu - Academic Homepage</title>
+    <link        .affiliation {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            transition: font-size 0.3s ease-out;
+        }icon type="image/svg+xml" href="images/favicon.svg">
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
     <link rel="alternate icon" href="images/favicon.ico">
     <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
@@ -82,7 +89,8 @@
         
         .header {
             width: 100%;
-            min-height: 400px;
+            height: 75vh;
+            min-height: 500px;
             background-image: url('images/background.jpg');
             background-size: cover;
             background-position: center;
@@ -95,6 +103,14 @@
             margin: 0;
             padding: 60px 50px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: height 0.3s ease-out, padding 0.3s ease-out;
+            overflow: hidden;
+        }
+        
+        .header.scrolled {
+            height: 200px;
+            min-height: 200px;
+            padding: 20px 50px;
         }
         
         .header::before {
@@ -117,6 +133,28 @@
             max-width: 1200px;
             width: 100%;
             color: white;
+            transition: all 0.3s ease-out;
+        }
+        
+        .header.scrolled .header-content {
+            gap: 20px;
+        }
+        
+        .header.scrolled .profile-photo {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .header.scrolled h1 {
+            font-size: 1.5em;
+        }
+        
+        .header.scrolled .affiliation {
+            font-size: 1em;
+        }
+        
+        .header.scrolled .contact-links {
+            font-size: 0.9em;
         }
         
         .profile-photo {
@@ -137,6 +175,8 @@
             background-repeat: no-repeat;
             overflow: hidden;
             box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            transition: width 0.3s ease-out, height 0.3s ease-out, transform 0.2s ease;
+            user-select: none;
         }
         
         .profile-photo img {
@@ -157,6 +197,7 @@
             margin-bottom: 8px;
             color: white;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            transition: font-size 0.3s ease-out;
         }
         
         .divider {
@@ -173,10 +214,10 @@
             font-weight: 300;
         }
         
-        .contact-links {
-            font-size: 0.95em;
-            line-height: 1.8;
+                .contact-links {
             color: rgba(255, 255, 255, 0.9);
+            line-height: 1.5;
+            transition: font-size 0.3s ease-out;
         }
         
         .contact-links a {
@@ -312,9 +353,25 @@
             }
             
             .header {
-                min-height: 300px;
+                height: 60vh;
+                min-height: 400px;
                 padding: 40px 25px;
                 background-attachment: scroll;
+            }
+            
+            .header.scrolled {
+                height: 150px;
+                min-height: 150px;
+                padding: 15px 25px;
+            }
+            
+            .header.scrolled .profile-photo {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .header.scrolled h1 {
+                font-size: 1.2em;
             }
             
             .header-content {
@@ -360,9 +417,26 @@
             }
             
             .header {
+                height: 55vh;
+                min-height: 350px;
                 flex-direction: column;
                 padding: 20px 15px;
                 text-align: center;
+            }
+            
+            .header.scrolled {
+                height: 120px;
+                min-height: 120px;
+                padding: 10px 15px;
+            }
+            
+            .header.scrolled .profile-photo {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .header.scrolled h1 {
+                font-size: 1em;
             }
             
             .profile-photo {
@@ -390,6 +464,7 @@
         <div class="nav-links">
             <a href="index.html" class="current">Home</a>
             <a href="pages/notes.html">Notes</a>
+            <a href="pages/blog.html">Blog</a>
             <a href="pages/teaching.html">Teaching</a>
             <a href="pages/faq.html">FAQ</a>
         </div>
@@ -397,11 +472,11 @@
     
     <div class="header">
         <div class="header-content">
-            <div class="profile-photo">
+            <div class="profile-photo" id="profilePhoto" style="cursor: pointer;">
                 <img src="images/profile.jpg" alt="Zhihao Shu">
             </div>
             <div class="header-info">
-                <h1>Zhihao Shu</h1>
+                <h1>舒志豪(Zhihao Shu)</h1>
                 <div class="divider"></div>
                 <div class="affiliation">University of Georgia</div>
                 <div class="contact-links">
@@ -470,5 +545,153 @@
         </ul>
         </div>
     </div>
+    
+    <script>
+        // 滚动效果处理
+        let lastScrollY = window.scrollY;
+        let ticking = false;
+        
+        function updateHeader() {
+            const header = document.querySelector('.header');
+            if (!header) return;
+            
+            const scrollY = window.scrollY;
+            const headerHeight = header.offsetHeight;
+            
+            // 当滚动超过头部高度的30%时，应用scrolled类
+            if (scrollY > headerHeight * 0.3) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+            
+            lastScrollY = scrollY;
+            ticking = false;
+        }
+        
+        function requestTick() {
+            if (!ticking) {
+                requestAnimationFrame(updateHeader);
+                ticking = true;
+            }
+        }
+        
+        // 监听滚动事件
+        window.addEventListener('scroll', requestTick);
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateHeader();
+            initAdminAccess();
+        });
+        
+        // 管理员访问逻辑：点击头像5次
+        let clickCount = 0;
+        let clickTimer = null;
+        const CLICK_TIMEOUT = 3000; // 3秒内点击5次有效
+        const REQUIRED_CLICKS = 5;
+        
+        function initAdminAccess() {
+            const profilePhoto = document.getElementById('profilePhoto');
+            if (profilePhoto) {
+                profilePhoto.addEventListener('click', handleProfileClick);
+            }
+        }
+        
+        function handleProfileClick(event) {
+            event.preventDefault();
+            clickCount++;
+            
+            // 清除之前的计时器
+            if (clickTimer) {
+                clearTimeout(clickTimer);
+            }
+            
+            // 添加视觉反馈
+            const photo = event.currentTarget;
+            photo.style.animation = 'none';
+            photo.offsetHeight; // 强制重绘
+            photo.style.animation = 'profileClick 0.3s ease';
+            
+            // 显示点击进度
+            if (clickCount === 1) {
+                showClickFeedback(`🖱️ 连续快速点击头像 ${REQUIRED_CLICKS} 次进入管理模式\n还需点击 ${REQUIRED_CLICKS - clickCount} 次...`);
+            } else if (clickCount < REQUIRED_CLICKS) {
+                showClickFeedback(`继续点击... 还需 ${REQUIRED_CLICKS - clickCount} 次`);
+            } else if (clickCount === REQUIRED_CLICKS) {
+                showClickFeedback('🎉 解锁成功！正在进入管理模式...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'pages/admin.html';
+                }, 800);
+                return;
+            }
+            
+            // 设置重置计时器
+            clickTimer = setTimeout(() => {
+                clickCount = 0;
+                hideClickFeedback();
+            }, CLICK_TIMEOUT);
+        }
+        
+        function showClickFeedback(message, type = 'info') {
+            // 移除现有的反馈
+            const existing = document.getElementById('clickFeedback');
+            if (existing) {
+                existing.remove();
+            }
+            
+            // 创建新的反馈元素
+            const feedback = document.createElement('div');
+            feedback.id = 'clickFeedback';
+            feedback.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: ${type === 'success' ? '#d4edda' : '#fff3cd'};
+                color: ${type === 'success' ? '#155724' : '#856404'};
+                padding: 15px 25px;
+                border-radius: 10px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-size: 16px;
+                font-weight: bold;
+                border: 2px solid ${type === 'success' ? '#c3e6cb' : '#ffeaa7'};
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            feedback.textContent = message;
+            
+            document.body.appendChild(feedback);
+            
+            // 淡入效果
+            setTimeout(() => {
+                feedback.style.opacity = '1';
+            }, 10);
+        }
+        
+        function hideClickFeedback() {
+            const feedback = document.getElementById('clickFeedback');
+            if (feedback) {
+                feedback.style.opacity = '0';
+                setTimeout(() => {
+                    feedback.remove();
+                }, 300);
+            }
+        }
+    </script>
+    
+    <style>
+        @keyframes profileClick {
+            0% { transform: scale(1); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 12px 40px rgba(231, 76, 60, 0.4); }
+            100% { transform: scale(1); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+        }
+        
+        .profile-photo:hover {
+            transform: scale(1.02);
+            transition: transform 0.2s ease;
+        }
+    </style>
 </body>
 </html>
