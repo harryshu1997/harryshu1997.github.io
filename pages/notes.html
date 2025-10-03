@@ -7,6 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
     <link rel="alternate icon" href="../images/favicon.ico">
     <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.5/dist/umd/supabase.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -587,6 +588,71 @@
     </div>
 
     <script>
+        const SUPABASE_URL = 'https://bmnwirsmmmhknbhvnuyb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtbndpcnNtbW1oa25iaHZudXliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NTQ3OTksImV4cCI6MjA3NDQzMDc5OX0.R-IWO_-i8Ih6WAz0V-ch4mgj1T-lNYWdHJrTeg4c9GE';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const NOTES_TABLE = 'notes';
+        const COMMENTS_TABLE = 'note_comments';
+
+        let allNotes = [];
+
+        function escapeHtml(text) {
+            return String(text ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function parseTags(tags) {
+            if (!tags && tags !== 0) return [];
+            if (Array.isArray(tags)) {
+                return tags
+                    .map(tag => String(tag).trim())
+                    .filter(Boolean);
+            }
+
+            return String(tags)
+                .split(',')
+                .map(tag => tag.trim())
+                .filter(tag => tag);
+        }
+
+        function sanitizeNoteId(id) {
+            return `note-${String(id || '')
+                .replace(/[^a-zA-Z0-9_-]/g, '')}`;
+        }
+
+        function normalizeComment(comment) {
+            if (!comment) return null;
+            return {
+                id: comment.id,
+                author: comment.author || 'Anonymous',
+                content: comment.content || '',
+                date: comment.created_at || new Date().toISOString()
+            };
+        }
+
+        function normalizeNote(record) {
+            if (!record) return null;
+
+            const rawComments = Array.isArray(record.comments)
+                ? record.comments
+                : Array.isArray(record.note_comments)
+                    ? record.note_comments
+                    : [];
+
+            return {
+                id: record.id,
+                title: record.title || 'Untitled',
+                content: record.content || '',
+                tags: parseTags(record.tags),
+                date: record.created_at || new Date().toISOString(),
+                comments: rawComments.map(normalizeComment).filter(Boolean)
+            };
+        }
+
         // Admin password (在实际使用中，您应该更改这个密码)
         const ADMIN_PASSWORD = "zhihao1997"; // 请更改为您的安全密码
         
@@ -601,6 +667,7 @@
                 localStorage.setItem('adminAuth', 'true');
                 showAuthenticatedState();
                 unlockNoteForm();
+                setupDraftFeatures();
                 updateLayoutForAuthState();
             } else {
                 alert('❌ Incorrect password! Only the admin can add notes.');
@@ -760,6 +827,7 @@
                 isAuthenticated = true;
                 showAuthenticatedState();
                 unlockNoteForm();
+                setupDraftFeatures();
             } else {
                 isAuthenticated = false;
                 showUnauthenticatedState();
@@ -772,242 +840,255 @@
         // Enhanced Notes Manager with Comments
         class NotesManager {
             constructor() {
-                this.notes = this.loadNotes();
-                this.renderNotes();
+                this.notes = [];
+                this.isLoading = false;
             }
-            
-            loadNotes() {
-                const saved = localStorage.getItem('dailyNotes');
-                if (saved) {
-                    return JSON.parse(saved);
+
+            async initialize() {
+                await this.loadNotes(true);
+            }
+
+            async loadNotes(showLoading = false) {
+                if (this.isLoading) {
+                    return;
                 }
-                // Default notes with comments
-                return [
-                    {
-                        id: 1,
-                        title: "Welcome to My Notes Page",
-                        content: "This is my first entry on the new notes page! I'm excited to use this space to document my daily thoughts, research progress, and academic insights.\n\nSome things I plan to write about:\n• Research breakthroughs and setbacks\n• Conference experiences and learnings\n• Book reviews and paper discussions\n• Teaching experiences and student interactions\n• Technical tips and coding discoveries\n\nLooking forward to building a collection of meaningful entries over time!",
-                        tags: ["welcome", "academic-life", "research"],
-                        date: "2025-09-15",
-                        comments: [
-                            {
-                                id: 1,
-                                author: "Anonymous Reader",
-                                content: "Great initiative! Looking forward to reading your academic journey.",
-                                date: "2025-09-15"
-                            }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        title: "Setting Up Interactive Notes with Authentication",
-                        content: "Today I implemented an interactive notes system with admin authentication. Now only I can add notes, while others can comment!\n\nKey features:\n• Admin-only note creation\n• Public commenting system\n• Secure authentication\n• Notes stored locally\n• Clean, responsive design\n\nThis creates a perfect balance between content control and community engagement.",
-                        tags: ["web-development", "javascript", "security"],
-                        date: "2025-09-14",
-                        comments: []
+
+                this.isLoading = true;
+
+                const container = document.getElementById('notesContainer');
+                const emptyState = document.getElementById('emptyState');
+
+                if (showLoading && container) {
+                    container.innerHTML = '<p style="text-align: center; color: #666;">Loading notes...</p>';
+                    if (emptyState) {
+                        emptyState.style.display = 'none';
                     }
-                ];
+                }
+
+                try {
+                    const { data, error } = await supabaseClient
+                        .from(NOTES_TABLE)
+                        .select(`
+                            id,
+                            title,
+                            content,
+                            tags,
+                            created_at,
+                            comments:note_comments (
+                                id,
+                                author,
+                                content,
+                                created_at
+                            )
+                        `)
+                        .order('created_at', { ascending: false })
+                        .order('created_at', { ascending: true, foreignTable: 'note_comments' });
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    this.notes = (data || []).map(normalizeNote).filter(Boolean);
+                    this.displayNotes();
+                } catch (error) {
+                    console.error('Failed to load notes:', error);
+                    if (!this.notes.length && container) {
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <p>Unable to load notes right now.<br>${escapeHtml(error.message || 'Please try again later.')}</p>
+                            </div>
+                        `;
+                    }
+                }
+                finally {
+                    this.isLoading = false;
+                }
             }
-            
-            saveNotes() {
-                localStorage.setItem('dailyNotes', JSON.stringify(this.notes));
-            }
-            
-            addNote(title, content, tags) {
+
+            async addNote(title, content, tags) {
                 if (!isAuthenticated) {
                     alert('❌ Authentication required to add notes!');
                     return;
                 }
-                
-                const newNote = {
-                    id: Date.now(),
-                    title: title.trim(),
-                    content: content.trim(),
-                    tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-                    date: new Date().toISOString().split('T')[0],
-                    comments: []
-                };
-                
-                this.notes.unshift(newNote);
-                this.saveNotes();
-                this.displayNotes(); // Use displayNotes to update the search system
-            }
-            
-            addComment(noteId, author, content) {
-                const note = this.notes.find(n => n.id === noteId);
-                if (note) {
-                    const comment = {
-                        id: Date.now(),
-                        author: author.trim() || 'Anonymous',
-                        content: content.trim(),
-                        date: new Date().toISOString().split('T')[0]
-                    };
-                    
-                    note.comments = note.comments || [];
-                    note.comments.push(comment);
-                    this.saveNotes();
-                    this.displayNotes(); // Use displayNotes to update the search system
+
+                const tagsArray = parseTags(tags);
+
+                try {
+                    const { data, error } = await supabaseClient
+                        .from(NOTES_TABLE)
+                        .insert([{ title: title.trim(), content: content.trim(), tags: tagsArray }])
+                        .select('id, title, content, tags, created_at')
+                        .single();
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    const newNote = normalizeNote({ ...data, comments: [] });
+                    this.notes = [newNote, ...this.notes];
+                    this.displayNotes();
+                } catch (error) {
+                    console.error('Failed to add note:', error);
+                    throw error;
                 }
             }
-            
-            deleteNote(id) {
+
+            async deleteNote(id) {
                 if (!isAuthenticated) {
                     alert('❌ Authentication required to delete notes!');
                     return;
                 }
-                
-                if (confirm('Are you sure you want to delete this note and all its comments?')) {
-                    this.notes = this.notes.filter(note => note.id !== id);
-                    this.saveNotes();
-                    this.displayNotes(); // Use displayNotes to update the search system
-                }
-            }
-            
-            formatDate(dateStr) {
-                const date = new Date(dateStr);
-                return date.toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                });
-            }
-            
-            renderNotes() {
-                const container = document.getElementById('notesContainer');
-                const emptyState = document.getElementById('emptyState');
-                
-                if (this.notes.length === 0) {
-                    container.innerHTML = '';
-                    emptyState.style.display = 'block';
+
+                if (!confirm('Are you sure you want to delete this note and all its comments?')) {
                     return;
                 }
-                
-                emptyState.style.display = 'none';
-                
-                container.innerHTML = this.notes.map(note => {
-                    const commentsHtml = note.comments && note.comments.length > 0 
-                        ? note.comments.map(comment => `
-                            <div class="comment">
-                                <div class="comment-header">
-                                    <span class="comment-author">${this.escapeHtml(comment.author)}</span>
-                                    <span>${this.formatDate(comment.date)}</span>
-                                </div>
-                                <div class="comment-content">${this.escapeHtml(comment.content)}</div>
-                            </div>
-                        `).join('')
-                        : '<p style="color: #666; font-style: italic; text-align: center; padding: 20px;">No comments yet. Be the first to comment!</p>';
-                    
-                    return `
-                        <div class="note-entry">
-                            ${isAuthenticated ? `
-                                <div class="note-actions">
-                                    <button onclick="notesManager.deleteNote(${note.id})" class="btn-danger">Delete</button>
-                                </div>
-                            ` : ''}
-                            <div class="note-date">${this.formatDate(note.date)}</div>
-                            <div class="note-title">${this.escapeHtml(note.title)}</div>
-                            <div class="note-content">${this.escapeHtml(note.content)}</div>
-                            ${note.tags && note.tags.length > 0 ? `
-                                <div class="note-tags">
-                                    ${note.tags.map(tag => `<span class="tag">${this.escapeHtml(tag)}</span>`).join('')}
-                                </div>
-                            ` : ''}
-                            
-                            <div class="comment-section">
-                                <div class="comment-form">
-                                    <h4>💬 Add a Comment</h4>
-                                    <div class="form-group">
-                                        <input type="text" id="commentAuthor${note.id}" placeholder="Your name (optional)" style="margin-bottom: 10px;">
-                                    </div>
-                                    <div class="form-group">
-                                        <textarea id="commentContent${note.id}" placeholder="Write your comment..." style="height: 80px;"></textarea>
-                                    </div>
-                                    <button onclick="addComment(${note.id})" class="btn">Post Comment</button>
-                                </div>
-                                
-                                <div class="comments">
-                                    <h4 style="color: #2c3e50; margin-bottom: 15px;">Comments (${note.comments ? note.comments.length : 0})</h4>
-                                    ${commentsHtml}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+
+                try {
+                    const { error } = await supabaseClient
+                        .from(NOTES_TABLE)
+                        .delete()
+                        .eq('id', id);
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    this.notes = this.notes.filter(note => String(note.id) !== String(id));
+                    this.displayNotes();
+                } catch (error) {
+                    console.error('Failed to delete note:', error);
+                    alert('Error deleting note: ' + error.message);
+                }
             }
-            
-            // Add displayNotes method to be compatible with search functionality
+
+            async addComment(noteId, author, content) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from(COMMENTS_TABLE)
+                        .insert([{ note_id: noteId, author: author?.trim() || null, content: content.trim() }])
+                        .select('id, author, content, created_at')
+                        .single();
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    const note = this.notes.find(n => String(n.id) === String(noteId));
+                    if (note) {
+                        note.comments = note.comments || [];
+                        note.comments.push(normalizeComment(data));
+                        this.displayNotes();
+                    } else {
+                        await this.loadNotes(false);
+                    }
+                } catch (error) {
+                    console.error('Failed to add comment:', error);
+                    throw error;
+                }
+            }
+
             displayNotes() {
-                this.renderNotes();
-            }
-            
-            escapeHtml(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
+                allNotes = [...this.notes];
+                displayAllNotes(allNotes);
             }
         }
         
         // Global function for adding comments
-        function addComment(noteId) {
-            const author = document.getElementById(`commentAuthor${noteId}`).value;
-            const content = document.getElementById(`commentContent${noteId}`).value;
-            
+        async function addComment(noteId) {
+            const sanitizedId = sanitizeNoteId(noteId);
+            const authorInput = document.getElementById(`commentAuthor-${sanitizedId}`);
+            const contentInput = document.getElementById(`commentContent-${sanitizedId}`);
+
+            if (!contentInput) {
+                alert('Comment form not found. Please refresh and try again.');
+                return;
+            }
+
+            const author = authorInput ? authorInput.value : '';
+            const content = contentInput.value;
+
             if (!content.trim()) {
                 alert('Please enter a comment!');
                 return;
             }
-            
-            notesManager.addComment(noteId, author, content);
-            
-            // Clear form
-            document.getElementById(`commentAuthor${noteId}`).value = '';
-            document.getElementById(`commentContent${noteId}`).value = '';
-            
-            // Show success message
-            alert('✅ Comment added successfully!');
+
+            try {
+                await notesManager.addComment(noteId, author, content);
+                if (authorInput) authorInput.value = '';
+                contentInput.value = '';
+                alert('✅ Comment added successfully!');
+            } catch (error) {
+                alert('Error adding comment: ' + error.message);
+            }
         }
-        
+
         // Initialize
         const notesManager = new NotesManager();
-        
-        // Initialize the counter immediately after creation
-        const notesCount = document.getElementById('notesCount');
-        if (notesCount) {
-            notesCount.textContent = `${notesManager.notes.length} note${notesManager.notes.length !== 1 ? 's' : ''}`;
-        }
-        allNotes = [...notesManager.notes];
-        
+
+        notesManager.initialize().catch(error => {
+            console.error('Failed to initialize notes manager:', error);
+        });
+
         checkAuthOnLoad();
+
+        setInterval(() => {
+            notesManager.loadNotes(false);
+        }, 45000);
         
         // Form submission handler
-        document.getElementById('noteForm').addEventListener('submit', function(e) {
+        document.getElementById('noteForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             if (!isAuthenticated) {
                 alert('❌ Authentication required to add notes!');
                 return;
             }
-            
+
             const title = document.getElementById('noteTitle').value;
             const content = document.getElementById('noteContent').value;
             const tags = document.getElementById('noteTags').value;
-            
-            if (title && content) {
-                notesManager.addNote(title, content, tags);
-                
-                // Clear form
+
+            if (!title.trim() || !content.trim()) {
+                alert('Please provide both a title and content before saving.');
+                return;
+            }
+
+            const btn = this.querySelector('.btn');
+            const originalText = btn ? btn.textContent : '';
+
+            try {
+                if (btn) {
+                    btn.textContent = 'Saving...';
+                    btn.disabled = true;
+                }
+
+                await notesManager.addNote(title, content, tags);
+
+                localStorage.removeItem('noteDraft');
                 this.reset();
-                
-                // Show success message
-                const btn = this.querySelector('.btn');
-                const originalText = btn.textContent;
-                btn.textContent = 'Note Added!';
-                btn.style.background = '#27ae60';
-                
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.style.background = '#3498db';
-                }, 2000);
+
+                if (btn) {
+                    btn.textContent = 'Note Added!';
+                    btn.style.background = '#27ae60';
+                    setTimeout(() => {
+                        btn.textContent = originalText || 'Add Note';
+                        btn.style.background = '#3498db';
+                    }, 2000);
+                }
+            } catch (error) {
+                alert('Error adding note: ' + error.message);
+                if (btn) {
+                    btn.textContent = 'Try Again';
+                    btn.style.background = '#e74c3c';
+                    setTimeout(() => {
+                        btn.textContent = originalText || 'Add Note';
+                        btn.style.background = '#3498db';
+                    }, 2000);
+                }
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                }
             }
         });
         
@@ -1020,6 +1101,7 @@
         
         // Auto-save drafts (only for authenticated users)
         let draftTimer;
+        let draftListenersAttached = false;
         function saveDraft() {
             if (!isAuthenticated) return;
             
@@ -1046,64 +1128,76 @@
         
         // Load draft on auth
         function setupDraftFeatures() {
-            if (isAuthenticated) {
-                loadDraft();
-                ['noteTitle', 'noteContent', 'noteTags'].forEach(id => {
-                    const element = document.getElementById(id);
-                    if (element) {
-                        element.addEventListener('input', () => {
-                            clearTimeout(draftTimer);
-                            draftTimer = setTimeout(saveDraft, 1000);
-                        });
-                    }
-                });
+            if (!isAuthenticated || draftListenersAttached) {
+                return;
             }
+
+            loadDraft();
+
+            ['noteTitle', 'noteContent', 'noteTags'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element && !element.dataset.draftListenerAttached) {
+                    element.addEventListener('input', () => {
+                        clearTimeout(draftTimer);
+                        draftTimer = setTimeout(saveDraft, 1000);
+                    });
+                    element.dataset.draftListenerAttached = 'true';
+                }
+            });
+
+            draftListenersAttached = true;
         }
-        
-        // Clear draft when note is successfully added
-        document.getElementById('noteForm').addEventListener('submit', () => {
-            localStorage.removeItem('noteDraft');
-        });
 
         // Notes display functions
-        let allNotes = []; // Store all notes
-        
         function displayAllNotes(notes) {
             const container = document.getElementById('notesContainer');
             const emptyState = document.getElementById('emptyState');
-            const notesCount = document.getElementById('notesCount');
-            
-            // Update notes counter
-            notesCount.textContent = `${notes.length} note${notes.length !== 1 ? 's' : ''}`;
-            
-            if (notes.length === 0) {
-                container.innerHTML = '';
-                emptyState.style.display = 'block';
-                emptyState.innerHTML = '<p>No notes yet. Add your first note!</p>';
+            const notesCountEl = document.getElementById('notesCount');
+
+            if (notesCountEl) {
+                notesCountEl.textContent = `${notes.length} note${notes.length !== 1 ? 's' : ''}`;
+            }
+
+            if (!container) {
                 return;
             }
-            
-            emptyState.style.display = 'none';
-            
-            // Use the same rendering logic as the original renderNotes
-            container.innerHTML = notes.map(note => {
-                // Helper functions
-                const formatDate = (dateStr) => {
-                    const date = new Date(dateStr);
-                    return date.toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
+
+            if (!notes.length) {
+                container.innerHTML = '';
+                if (emptyState) {
+                    emptyState.style.display = 'block';
+                    emptyState.innerHTML = '<p>No notes yet. Add your first note!</p>';
+                }
+                return;
+            }
+
+            if (emptyState) {
+                emptyState.style.display = 'none';
+            }
+
+            const formatDate = (dateStr) => {
+                const date = new Date(dateStr);
+                if (Number.isNaN(date.getTime())) {
+                    return new Date().toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
                     });
-                };
-                
-                const escapeHtml = (text) => {
-                    const div = document.createElement('div');
-                    div.textContent = text;
-                    return div.innerHTML;
-                };
-                
-                const commentsHtml = note.comments && note.comments.length > 0 
+                }
+                return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            };
+
+            container.innerHTML = notes.map(note => {
+                const noteIdJson = JSON.stringify(note.id);
+                const sanitizedId = sanitizeNoteId(note.id);
+                const authorFieldId = `commentAuthor-${sanitizedId}`;
+                const contentFieldId = `commentContent-${sanitizedId}`;
+
+                const commentsHtml = note.comments && note.comments.length > 0
                     ? note.comments.map(comment => `
                         <div class="comment">
                             <div class="comment-header">
@@ -1114,12 +1208,12 @@
                         </div>
                     `).join('')
                     : '<p style="color: #666; font-style: italic; text-align: center; padding: 20px;">No comments yet. Be the first to comment!</p>';
-                
+
                 return `
                     <div class="note-entry">
                         ${isAuthenticated ? `
                             <div class="note-actions">
-                                <button onclick="notesManager.deleteNote(${note.id})" class="btn-danger">Delete</button>
+                                <button onclick="notesManager.deleteNote(${noteIdJson})" class="btn-danger">Delete</button>
                             </div>
                         ` : ''}
                         <div class="note-date">${formatDate(note.date)}</div>
@@ -1130,19 +1224,19 @@
                                 ${note.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
                             </div>
                         ` : ''}
-                        
+
                         <div class="comment-section">
                             <div class="comment-form">
                                 <h4>💬 Add a Comment</h4>
                                 <div class="form-group">
-                                    <input type="text" id="commentAuthor${note.id}" placeholder="Your name (optional)" style="margin-bottom: 10px;">
+                                    <input type="text" id="${authorFieldId}" placeholder="Your name (optional)" style="margin-bottom: 10px;">
                                 </div>
                                 <div class="form-group">
-                                    <textarea id="commentContent${note.id}" placeholder="Write your comment..." style="height: 80px;"></textarea>
+                                    <textarea id="${contentFieldId}" placeholder="Write your comment..." style="height: 80px;"></textarea>
                                 </div>
-                                <button onclick="addComment(${note.id})" class="btn">Post Comment</button>
+                                <button onclick="addComment(${noteIdJson})" class="btn">Post Comment</button>
                             </div>
-                            
+
                             <div class="comments">
                                 <h4 style="color: #2c3e50; margin-bottom: 15px;">Comments (${note.comments ? note.comments.length : 0})</h4>
                                 ${commentsHtml}
@@ -1153,13 +1247,6 @@
             }).join('');
         }
         
-        // Setup the enhanced displayNotes method after displayAllNotes is defined
-        notesManager.displayNotes = function() {
-            allNotes = [...this.notes];
-            displayAllNotes(allNotes);
-        };
-        
-
     </script>
 </body>
 </html>
