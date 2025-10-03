@@ -614,6 +614,8 @@
         const COMMENTS_TABLE = 'note_comments';
 
         let allNotes = [];
+    let draftTimer;
+    let draftListenersAttached = false;
 
         function escapeHtml(text) {
             return String(text ?? '')
@@ -688,6 +690,9 @@
                 unlockNoteForm();
                 setupDraftFeatures();
                 updateLayoutForAuthState();
+                if (typeof notesManager !== 'undefined') {
+                    notesManager.displayNotes();
+                }
             } else {
                 alert('❌ Incorrect password! Only the admin can add notes.');
                 document.getElementById('adminPassword').value = '';
@@ -847,10 +852,16 @@
                 showAuthenticatedState();
                 unlockNoteForm();
                 setupDraftFeatures();
+                if (typeof notesManager !== 'undefined') {
+                    notesManager.displayNotes();
+                }
             } else {
                 isAuthenticated = false;
                 showUnauthenticatedState();
                 lockNoteForm();
+                if (typeof notesManager !== 'undefined') {
+                    notesManager.displayNotes();
+                }
             }
             // Always update layout based on auth state
             updateLayoutForAuthState();
@@ -1155,9 +1166,7 @@
             }
         });
         
-        // Auto-save drafts (only for authenticated users)
-        let draftTimer;
-        let draftListenersAttached = false;
+    // Auto-save drafts (only for authenticated users)
         function saveDraft() {
             if (!isAuthenticated) return;
             
