@@ -238,6 +238,25 @@
             font-size: 0.85em;
             color: #666;
         }
+
+        .comment-header .comment-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comment-delete {
+            background: transparent;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 0.75em;
+            padding: 0;
+        }
+
+        .comment-delete:hover {
+            text-decoration: underline;
+        }
         
         .comment-author {
             font-weight: bold;
@@ -987,6 +1006,39 @@
                 }
             }
 
+            async deleteComment(noteId, commentId) {
+                if (!isAuthenticated) {
+                    alert('❌ Authentication required to delete comments!');
+                    return;
+                }
+
+                if (!confirm('Are you sure you want to delete this comment?')) {
+                    return;
+                }
+
+                try {
+                    const { error } = await supabaseClient
+                        .from(COMMENTS_TABLE)
+                        .delete()
+                        .eq('id', commentId);
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    const note = this.notes.find(n => String(n.id) === String(noteId));
+                    if (note) {
+                        note.comments = (note.comments || []).filter(comment => String(comment.id) !== String(commentId));
+                        this.displayNotes();
+                    } else {
+                        await this.loadNotes(false);
+                    }
+                } catch (error) {
+                    console.error('Failed to delete comment:', error);
+                    alert('Error deleting comment: ' + error.message);
+                }
+            }
+
             displayNotes() {
                 allNotes = [...this.notes];
                 displayAllNotes(allNotes);
@@ -1020,6 +1072,10 @@
             } catch (error) {
                 alert('Error adding comment: ' + error.message);
             }
+        }
+
+        async function deleteComment(noteId, commentId) {
+            await notesManager.deleteComment(noteId, commentId);
         }
 
         // Initialize
@@ -1198,22 +1254,31 @@
                 const contentFieldId = `commentContent-${sanitizedId}`;
 
                 const commentsHtml = note.comments && note.comments.length > 0
-                    ? note.comments.map(comment => `
-                        <div class="comment">
-                            <div class="comment-header">
-                                <span class="comment-author">${escapeHtml(comment.author)}</span>
-                                <span>${formatDate(comment.date)}</span>
+                    ? note.comments.map(comment => {
+                        const commentIdJson = JSON.stringify(comment.id);
+                        const deleteButton = isAuthenticated
+                            ? `<button class="comment-delete" onclick='deleteComment(${noteIdJson}, ${commentIdJson})'>Delete</button>`
+                            : '';
+                        return `
+                            <div class="comment">
+                                <div class="comment-header">
+                                    <span class="comment-author">${escapeHtml(comment.author)}</span>
+                                    <div class="comment-controls">
+                                        <span>${formatDate(comment.date)}</span>
+                                        ${deleteButton}
+                                    </div>
+                                </div>
+                                <div class="comment-content">${escapeHtml(comment.content)}</div>
                             </div>
-                            <div class="comment-content">${escapeHtml(comment.content)}</div>
-                        </div>
-                    `).join('')
+                        `;
+                    }).join('')
                     : '<p style="color: #666; font-style: italic; text-align: center; padding: 20px;">No comments yet. Be the first to comment!</p>';
 
                 return `
                     <div class="note-entry">
                         ${isAuthenticated ? `
                             <div class="note-actions">
-                                <button onclick="notesManager.deleteNote(${noteIdJson})" class="btn-danger">Delete</button>
+                                <button onclick='notesManager.deleteNote(${noteIdJson})' class="btn-danger">Delete</button>
                             </div>
                         ` : ''}
                         <div class="note-date">${formatDate(note.date)}</div>
@@ -1234,7 +1299,7 @@
                                 <div class="form-group">
                                     <textarea id="${contentFieldId}" placeholder="Write your comment..." style="height: 80px;"></textarea>
                                 </div>
-                                <button onclick="addComment(${noteIdJson})" class="btn">Post Comment</button>
+                                <button onclick='addComment(${noteIdJson})' class="btn">Post Comment</button>
                             </div>
 
                             <div class="comments">
