@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper Reading - Zhihao Shu</title>
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.5/dist/umd/supabase.min.js"></script>
+    <style>
+        body { font-family: Georgia, serif; line-height: 1.6; color: #333; background: #f5f5f5; margin: 0; }
+        .nav-header { background: #1a252f; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .nav-title { color: white; font-size: 1.6em; }
+        .nav-links a { color: #ecf0f1; text-decoration: none; margin: 0 12px; transition: color 0.3s; }
+        .nav-links a:hover { color: #3498db; }
+        .nav-links a.current { color: #e74c3c; font-weight: bold; }
+        
+        .container { max-width: 1200px; margin: 100px auto 40px; padding: 0 20px; }
+        
+        /* Controls */
+        .controls { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; display: flex; flex-direction: column; gap: 15px; }
+        .control-row { display: flex; gap: 15px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+        
+        .search-box { flex: 2; padding: 10px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; }
+        .sort-select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; background: white; }
+        
+        /* Semantic Search Styles */
+        .semantic-wrapper { flex: 2; display: flex; gap: 10px; align-items: center; position: relative; }
+        .semantic-input { width: 100%; padding: 10px 15px; border: 1px solid #3498db; border-radius: 6px; font-size: 16px; background: #f0f8ff; }
+        .semantic-btn { background: #3498db; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
+        .semantic-btn:hover { background: #2980b9; }
+
+        /* View Toggle */
+        .view-toggle { display: flex; background: #eee; border-radius: 6px; padding: 4px; }
+        .toggle-btn { border: none; background: transparent; padding: 6px 12px; cursor: pointer; border-radius: 4px; display: flex; align-items: center; font-size: 1.2em; color: #666; }
+        .toggle-btn.active { background: white; color: #333; shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+        
+        /* TABLE VIEW (Excel Style) */
+        .papers-table-container { overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { background: #f8f9fa; padding: 12px 15px; text-align: left; border-bottom: 2px solid #ddd; font-weight: bold; color: #555; }
+        td { padding: 10px 15px; border-bottom: 1px solid #eee; font-size: 0.95em; vertical-align: top; }
+        tr:hover { background-color: #f9f9f9; }
+        .col-date { width: 100px; color: #7f8c8d; }
+        .col-conf { width: 120px; font-weight: 500; color: #27ae60; }
+        .col-topic { width: 150px; color: #d35400; }
+        .col-summary { color: #666; font-size: 0.9em; }
+
+        /* GRID VIEW */
+        .papers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
+        .paper-card { background: white; border-radius: 10px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.2s; border-top: 4px solid #3498db; display: flex; flex-direction: column; }
+        .paper-card:hover { transform: translateY(-5px); }
+        .paper-meta { font-size: 0.85em; color: #7f8c8d; margin-bottom: 10px; display: flex; justify-content: space-between; }
+        .paper-title { font-size: 1.3em; margin-bottom: 12px; font-weight: bold; color: #2c3e50; line-height: 1.3; }
+        .paper-title a { color: inherit; text-decoration: none; }
+        .badge { padding: 4px 10px; border-radius: 15px; font-size: 0.75em; font-weight: bold; margin-right: 5px; }
+        .badge-conf { background: #e8f6f3; color: #1abc9c; }
+        .paper-summary { font-size: 0.95em; color: #555; margin-top: 10px; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="nav-header">
+        <div class="nav-title">Zhihao Shu</div>
+        <div class="nav-links">
+            <a href="../index.html">Home</a>
+            <a href="notes.html">Notes</a>
+            <a href="papers.html" class="current">Reading List</a>
+            <a href="blog.html">Blog</a>
+            <a href="teaching.html">Teaching</a>
+            <a href="faq.html">FAQ</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="controls">
+            <div class="control-row">
+                <input type="text" id="searchInput" class="search-box" placeholder="Filter by keyword (e.g. 'Transformer')...">
+                <select id="sortSelect" class="sort-select">
+                    <option value="newest_read">Date Read (Newest)</option>
+                    <option value="newest_pub">Date Published (Newest)</option>
+                    <option value="conf">Conference</option>
+                </select>
+                <div class="view-toggle">
+                    <button class="toggle-btn" onclick="setView('card')" title="Card View">
+                        <ion-icon name="grid-outline"></ion-icon>
+                    </button>
+                    
+                    <button class="toggle-btn active" onclick="setView('table')" title="List View">
+                        <ion-icon name="list-outline"></ion-icon>
+                    </button>
+                </div>
+            </div>
+
+            <div class="control-row" style="border-top: 1px solid #eee; padding-top: 15px;">
+                <div class="semantic-wrapper">
+                    <input type="text" id="semanticInput" class="semantic-input" placeholder="✨ AI Sort: 'Find papers about mobile LLM efficiency'...">
+                    <button class="semantic-btn" onclick="handleSemanticSearch()">AI Sort</button>
+                </div>
+                <div style="font-size: 0.85em; color: #888;">*Requires API Key</div>
+            </div>
+        </div>
+
+        <div id="papersGrid" class="papers-grid">
+            <div class="loading" style="text-align: center;">Loading library...</div>
+        </div>
+
+        <div id="papersTable" class="papers-table-container hidden">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Conf.</th>
+                        <th>Topic</th>
+                        <th>Date Read</th>
+                        <th>Summary</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://bmnwirsmmmhknbhvnuyb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtbndpcnNtbW1oa25iaHZudXliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NTQ3OTksImV4cCI6MjA3NDQzMDc5OX0.R-IWO_-i8Ih6WAz0V-ch4mgj1T-lNYWdHJrTeg4c9GE';
+        const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let allPapers = [];
+        let currentView = 'table';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await fetchPapers();
+            
+            document.getElementById('searchInput').addEventListener('input', renderPapers);
+            document.getElementById('sortSelect').addEventListener('change', renderPapers);
+            document.getElementById('semanticInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleSemanticSearch() });
+        });
+
+        // 1. Fetch Basic Data
+        async function fetchPapers() {
+            const { data, error } = await client.from('papers').select('*');
+            if (!error) {
+                allPapers = data;
+                renderPapers();
+            }
+        }
+
+        // 2. View Toggle Logic
+        window.setView = function(mode) {
+            currentView = mode;
+            document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+            // Simply finding by index is risky, logic below is safer:
+            if(mode === 'card') document.querySelector('.toggle-btn[title="Card View"]').classList.add('active');
+            else document.querySelector('.toggle-btn[title="List View"]').classList.add('active');
+            
+            renderPapers();
+        }
+
+        // 3. Render Logic (Handles both views)
+        function renderPapers(customList = null) {
+            const papersToRender = customList || filterAndSortPapers();
+            
+            const grid = document.getElementById('papersGrid');
+            const tableContainer = document.getElementById('papersTable');
+            const tableBody = document.getElementById('tableBody');
+
+            if (currentView === 'card') {
+                grid.classList.remove('hidden');
+                tableContainer.classList.add('hidden');
+                grid.innerHTML = papersToRender.map(p => `
+                    <div class="paper-card">
+                        <div style="cursor: pointer;" onclick="window.location.href='paper-detail.html?id=${p.id}'">
+                            <div class="paper-meta">
+                                <span>${p.date_published ? p.date_published.substring(0,4) : 'Unknown'}</span>
+                                <span>Read: ${p.date_read ? p.date_read.substring(0,10) : '-'}</span>
+                            </div>
+                            <div class="paper-title">
+                                <a href="paper-detail.html?id=${p.id}">${escapeHtml(p.title)}</a>
+                            </div>
+                            <div style="margin-bottom:10px;">
+                                ${p.conference ? `<span class="badge badge-conf">${p.conference}</span>` : ''}
+                            </div>
+                            <div class="paper-summary">${escapeHtml(p.summary || '')}</div>
+                        </div>
+                        
+                        <div style="margin-top:auto; padding-top:15px; border-top:1px solid #eee;">
+                            <a href="${p.link || '#'}" target="_blank" style="font-size:0.85em; color:#3498db; text-decoration:none; font-weight:bold;">
+                            Source PDF &rarr;
+                            </a>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                grid.classList.add('hidden');
+                tableContainer.classList.remove('hidden');
+                tableBody.innerHTML = papersToRender.map(p => `
+                    <tr onclick="window.location.href='paper-detail.html?id=${p.id}'" style="cursor: pointer;">
+                        <td>
+                            <a href="paper-detail.html?id=${p.id}" style="color:#2c3e50;font-weight:bold;text-decoration:none;">
+                                ${escapeHtml(p.title)}
+                            </a>
+                        </td>
+                        <td class="col-conf">${p.conference || ''}</td>
+                        <td class="col-topic">${p.topic || ''}</td>
+                        <td class="col-date">${p.date_read ? p.date_read.substring(0,10) : ''}</td>
+                        <td class="col-summary">${p.summary ? p.summary.substring(0, 100) + '...' : ''}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function filterAndSortPapers() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const sort = document.getElementById('sortSelect').value;
+
+            let filtered = allPapers.filter(p => {
+                const text = `${p.title} ${p.topic} ${p.summary} ${p.conference}`.toLowerCase();
+                return text.includes(search);
+            });
+
+            filtered.sort((a, b) => {
+                if (sort === 'newest_read') return new Date(b.date_read || 0) - new Date(a.date_read || 0);
+                if (sort === 'newest_pub') return new Date(b.date_published || 0) - new Date(a.date_published || 0);
+                if (sort === 'conf') return (a.conference || '').localeCompare(b.conference || '');
+                return 0;
+            });
+            return filtered;
+        }
+
+        // 4. Semantic Search Logic
+        window.handleSemanticSearch = async function() {
+            const query = document.getElementById('semanticInput').value;
+            if(!query) return renderPapers();
+
+            // Try getting key from local storage (if Admin) or ask user
+            let apiKey = localStorage.getItem('openai_key');
+            if (!apiKey) {
+                apiKey = prompt("Please enter OpenAI API Key for Semantic Search (This is a static site demo feature):");
+                if(!apiKey) return;
+            }
+
+            const btn = document.querySelector('.semantic-btn');
+            btn.textContent = "Analyzing...";
+            btn.disabled = true;
+
+            try {
+                // Generate Embedding for Query
+                const res = await fetch('https://api.openai.com/v1/embeddings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                    body: JSON.stringify({ model: "text-embedding-3-small", input: query })
+                });
+                const data = await res.json();
+                const vector = data.data[0].embedding;
+
+                // Call Supabase RPC
+                const { data: matchedPapers, error } = await client.rpc('match_papers', {
+                    query_embedding: vector,
+                    match_threshold: 0.1, // Return almost anything with slight relevance
+                    match_count: 20
+                });
+
+                if (error) throw error;
+                
+                // Render the specific results
+                renderPapers(matchedPapers);
+                
+            } catch (e) {
+                alert("Search failed: " + e.message);
+            } finally {
+                btn.textContent = "AI Sort";
+                btn.disabled = false;
+            }
+        }
+
+        function escapeHtml(text) {
+            return (text || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+    </script>
+</body>
+</html>

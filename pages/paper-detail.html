@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper Details - Zhihao Shu</title>
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.5/dist/umd/supabase.min.js"></script>
+    <style>
+        body { font-family: Georgia, serif; line-height: 1.8; color: #333; background: #f9f9f9; margin: 0; }
+        .nav-header { background: #1a252f; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .nav-links a { color: #ecf0f1; text-decoration: none; margin-left: 20px; transition: color 0.3s; }
+        .nav-links a:hover { color: #3498db; }
+        
+        .container { max-width: 900px; margin: 60px auto; padding: 0 25px; }
+        
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #7f8c8d; font-weight: bold; margin-bottom: 30px; transition: color 0.2s; }
+        .back-btn:hover { color: #3498db; }
+
+        .paper-content { background: white; padding: 50px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.06); }
+        
+        .badges { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .badge { padding: 6px 14px; border-radius: 20px; font-size: 0.85em; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-conf { background: #e8f6f3; color: #1abc9c; }
+        .badge-topic { background: #fff8e1; color: #f39c12; }
+
+        h1 { font-size: 2.2em; margin: 0 0 20px 0; color: #2c3e50; line-height: 1.3; }
+        
+        .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; padding-bottom: 30px; border-bottom: 1px solid #eee; }
+        .meta-item strong { display: block; font-size: 0.85em; color: #95a5a6; text-transform: uppercase; margin-bottom: 5px; }
+        .meta-item span { font-size: 1.1em; color: #34495e; font-weight: 500; }
+
+        .summary-section h2 { font-size: 1.5em; margin-bottom: 15px; color: #34495e; }
+        .summary-text { font-size: 1.1em; color: #444; white-space: pre-wrap; }
+
+        .action-area { margin-top: 40px; padding-top: 30px; border-top: 1px dashed #ddd; display: flex; gap: 15px; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; transition: transform 0.2s; }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-primary:hover { background: #2980b9; transform: translateY(-2px); }
+        
+        .loading { text-align: center; padding: 60px; color: #999; font-size: 1.2em; }
+    </style>
+</head>
+<body>
+    <div class="nav-header">
+        <div style="font-size: 1.5em;">Zhihao Shu</div>
+        <div class="nav-links">
+            <a href="papers.html">Back to List</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <a href="papers.html" class="back-btn"><ion-icon name="arrow-back-outline"></ion-icon> Back to Reading List</a>
+        
+        <div id="contentArea" class="paper-content">
+            <div class="loading">Loading paper details...</div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://bmnwirsmmmhknbhvnuyb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtbndpcnNtbW1oa25iaHZudXliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NTQ3OTksImV4cCI6MjA3NDQzMDc5OX0.R-IWO_-i8Ih6WAz0V-ch4mgj1T-lNYWdHJrTeg4c9GE';
+        const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Get ID from URL
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+
+            if (!id) {
+                document.getElementById('contentArea').innerHTML = '<p>No paper specified.</p>';
+                return;
+            }
+
+            // Fetch Data
+            const { data: paper, error } = await client
+                .from('papers')
+                .select('*')
+                .eq('id', id)
+                .single();
+
+            if (error || !paper) {
+                document.getElementById('contentArea').innerHTML = '<p>Paper not found.</p>';
+                return;
+            }
+
+            // Render
+            renderDetail(paper);
+        });
+
+        function renderDetail(p) {
+            const container = document.getElementById('contentArea');
+            const datePub = p.date_published ? new Date(p.date_published).toLocaleDateString() : 'Unknown';
+            const dateRead = p.date_read ? new Date(p.date_read).toLocaleDateString() : 'Not read yet';
+
+            container.innerHTML = `
+                <div class="badges">
+                    ${p.conference ? `<span class="badge badge-conf">${escapeHtml(p.conference)}</span>` : ''}
+                    ${p.topic ? `<span class="badge badge-topic">${escapeHtml(p.topic)}</span>` : ''}
+                </div>
+
+                <h1>${escapeHtml(p.title)}</h1>
+
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <strong>Published</strong>
+                        <span>${datePub}</span>
+                    </div>
+                    <div class="meta-item">
+                        <strong>Read Date</strong>
+                        <span>${dateRead}</span>
+                    </div>
+                    <div class="meta-item">
+                        <strong>Topic</strong>
+                        <span>${escapeHtml(p.topic || 'General')}</span>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <h2>Summary</h2>
+                    <div class="summary-text">${escapeHtml(p.summary || 'No summary available.')}</div>
+                </div>
+
+                <div class="action-area">
+                    <a href="${p.link}" target="_blank" class="btn btn-primary">
+                        <ion-icon name="open-outline"></ion-icon> Read Original Paper
+                    </a>
+                </div>
+            `;
+        }
+
+        function escapeHtml(text) {
+            return (text || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+    </script>
+</body>
+</html>
