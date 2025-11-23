@@ -5,336 +5,113 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog - Zhihao Shu</title>
     <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
-    <link rel="alternate icon" href="../images/favicon.ico">
-    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.5/dist/umd/supabase.min.js"></script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #2c3e50;
+            --accent: #c0392b;
+            --bg-color: #faf9f6;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
-        
+
         body {
-            font-family: Georgia, serif;
-            line-height: 1.6;
-            color: #333;
-            background: #f5f5f5;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: #4a5568;
+            line-height: 1.8;
+            margin: 0;
         }
-        
+
+        /* Glass Navigation */
         .nav-header {
-            background: #1a252f;
-            padding: 15px 40px;
-            border-bottom: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            padding: 15px 50px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex; justify-content: space-between; align-items: center;
         }
+        .nav-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.5em; color: var(--primary); text-decoration: none; }
+        .nav-links a { text-decoration: none; color: var(--primary); margin-left: 25px; opacity: 0.7; transition: 0.2s; font-weight: 500; }
+        .nav-links a:hover, .nav-links a.current { opacity: 1; color: var(--accent); }
+
+        .container { max-width: 900px; margin: 120px auto 60px; padding: 0 20px; }
         
-        .nav-title {
-            color: white;
-            font-size: 1.8em;
-            font-weight: normal;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            margin: 0 15px;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        
-        .nav-links a:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .nav-links a.current {
-            background: #e74c3c;
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 100px 20px 40px;
-        }
-        
-        .page-header {
-            text-align: center;
-            margin-bottom: 50px;
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .page-header h1 {
-            font-size: 2.5em;
-            color: #1a252f;
-            margin-bottom: 15px;
-        }
-        
-        .page-header p {
-            font-size: 1.2em;
-            color: #666;
-        }
-        
-        .posts-container {
-            display: grid;
-            gap: 30px;
-        }
-        
+        .page-header { text-align: center; margin-bottom: 60px; }
+        .page-header h1 { font-family: 'Playfair Display', serif; font-size: 2.5em; color: var(--primary); margin-bottom: 10px; }
+        .page-header p { color: #718096; font-size: 1.1em; }
+
+        /* Blog Card Styles */
         .post-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
             overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.3s;
         }
+        .post-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+
+        .post-header { padding: 30px 40px 20px; border-bottom: 1px solid #f7fafc; }
+        .post-title { font-family: 'Playfair Display', serif; font-size: 1.6em; color: var(--primary); margin-bottom: 10px; font-weight: 700; }
+        .post-meta { font-size: 0.85em; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
         
-        .post-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
+        .post-content { padding: 30px 40px; color: #4a5568; font-size: 1.05em; }
         
-        .post-header {
-            padding: 25px 30px 15px;
-            border-bottom: 1px solid #eee;
-        }
+        /* Markdown Styling */
+        .post-content h1, .post-content h2, .post-content h3 { color: var(--primary); font-family: 'Playfair Display', serif; margin-top: 1.5em; }
+        .post-content p { margin-bottom: 1em; }
+        .post-content blockquote { border-left: 4px solid var(--accent); padding-left: 15px; color: #718096; font-style: italic; margin: 1.5em 0; }
         
-        .post-title {
-            font-size: 1.6em;
-            font-weight: bold;
-            color: #1a252f;
-            margin-bottom: 10px;
-        }
-        
-        .post-meta {
-            display: flex;
-            gap: 20px;
-            color: #666;
-            font-size: 0.9em;
-        }
-        
-        .post-type {
-            background: #e74c3c;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: bold;
-        }
-        
-        .post-content {
-            padding: 25px 30px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
+        .post-actions { 
+            padding: 0 40px 30px; 
+            display: flex; 
+            gap: 15px; 
+            border-top: 1px dashed #f0f0f0; 
+            padding-top: 20px; 
+            margin-top: 10px;
         }
 
-        .post-body {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+        .btn { 
+            background: transparent; border: 1px solid #cbd5e0; 
+            padding: 8px 20px; border-radius: 6px; cursor: pointer; 
+            color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 500;
+            transition: 0.2s;
+            display: inline-flex; align-items: center; gap: 8px;
         }
+        .btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-icon { font-size: 1.1em; }
 
-        .post-image {
-            width: 100%;
-            height: auto;
-            max-height: 420px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
+        /* Logic Helpers */
+        .notion-code { background: #2d2d2d !important; border-radius: 8px; padding: 20px; margin: 20px 0; overflow-x: auto; font-size: 0.9em; line-height: 1.5; color: #ccc; }
+        .is-hidden { display: none; }
+        .post-full { display: none; }
+        .post-full.is-visible { display: block; animation: fadeIn 0.5s; }
+        .post-image { width: 100%; border-radius: 8px; margin-bottom: 20px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .post-summary {
-            color: #34495e;
-            line-height: 1.7;
-        }
-
-        .post-summary p {
-            margin: 0;
-        }
-
-        .post-summary-more {
-            margin-top: 6px;
-            color: #95a5a6;
-            font-style: italic;
-        }
-
-        .post-full {
-            display: none;
-            flex-direction: column;
-            gap: 18px;
-            padding-top: 16px;
-            border-top: 1px dashed #dfe6ee;
-        }
-
-        .post-full.is-visible {
-            display: flex;
-        }
-
-        .post-full p {
-            margin: 0;
-        }
-
-        .is-hidden {
-            display: none !important;
-        }
-
-        .notion-code {
-            background: #1e1e2f;
-            border-radius: 10px;
-            padding: 16px;
-            border: 1px solid #2d2d44;
-            overflow-x: auto;
-        }
-
-        .notion-code code {
-            font-family: 'Fira Code', 'Monaco', 'Cascadia Code', monospace;
-            font-size: 14px;
-        }
-
-        .post-actions {
-            display: flex;
-            gap: 12px;
-            padding: 20px 30px 30px;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-size: 0.95em;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .btn-secondary {
-            background: #3498db;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #2980b9;
-            transform: translateY(-1px);
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: #34495e;
-            border: 1px solid #ccd6e0;
-        }
-
-        .btn-outline:hover {
-            background: #f0f4f8;
-            transform: translateY(-1px);
-        }
-        
-        .no-posts {
-            text-align: center;
-            padding: 60px 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .no-posts h2 {
-            color: #666;
-            margin-bottom: 15px;
-        }
-        
-        .no-posts p {
-            color: #999;
-        }
-        
-        .admin-link {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #e74c3c;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 50px;
-            text-decoration: none;
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
-            transition: all 0.3s;
-            font-weight: bold;
-            z-index: 100;
-        }
-        
-        .admin-link:hover {
-            background: #c0392b;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
-        }
-        
         @media (max-width: 768px) {
-            .nav-header {
-                padding: 15px 20px;
-                flex-direction: column;
-                text-align: center;
-                gap: 15px;
-            }
-            
-            .nav-links a {
-                margin: 0 8px;
-                font-size: 14px;
-            }
-            
-            .container {
-                padding: 120px 15px 40px;
-            }
-            
-            .page-header {
-                padding: 30px 20px;
-            }
-            
-            .page-header h1 {
-                font-size: 2em;
-            }
-            
-            .post-header, .post-content {
-                padding: 20px;
-            }
-            
-            .post-title {
-                font-size: 1.3em;
-            }
-            
-            .admin-link {
-                position: relative;
-                bottom: auto;
-                right: auto;
-                margin: 30px auto;
-                display: block;
-                text-align: center;
-                width: fit-content;
-            }
-
-                .post-actions {
-                    padding: 20px;
-                    flex-direction: column;
-                    align-items: stretch;
-                }
+            .nav-header { padding: 15px 20px; }
+            .nav-links { display: none; }
+            .post-header, .post-content, .post-actions { padding: 20px; }
         }
     </style>
 </head>
 <body>
-    <div class="nav-header">
-        <div class="nav-title">Zhihao Shu</div>
+    <nav class="nav-header">
+        <a href="../index.html" class="nav-title">Zhihao Shu</a>
         <div class="nav-links">
             <a href="../index.html">Home</a>
             <a href="notes.html">Notes</a>
@@ -343,423 +120,192 @@
             <a href="teaching.html">Teaching</a>
             <a href="faq.html">FAQ</a>
         </div>
-    </div>
+    </nav>
 
     <div class="container">
         <div class="page-header">
-            <h1>Blog & Code Snippets</h1>
-            <p>Thoughts, code, and insights from my research and development work</p>
+            <h1>Blog & Code</h1>
+            <p>Insights, snippets, and updates.</p>
         </div>
-
-        <div class="posts-container" id="postsContainer">
-            <!-- Posts will be loaded here -->
-        </div>
+        <div id="postsContainer"></div>
     </div>
 
-    <!-- Admin link (only visible with proper authentication) -->
-    <a href="admin.html" class="admin-link" id="adminLink" style="display: none;">
-        ⚙️ Admin
-    </a>
+    <a href="admin.html" id="adminLink" style="display: none; position: fixed; bottom: 30px; right: 30px; background: var(--accent); color: white; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: bold; box-shadow: 0 4px 15px rgba(192, 57, 43, 0.4);">⚙️ Admin</a>
 
     <script>
         const SUPABASE_URL = 'https://bmnwirsmmmhknbhvnuyb.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtbndpcnNtbW1oa25iaHZudXliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NTQ3OTksImV4cCI6MjA3NDQzMDc5OX0.R-IWO_-i8Ih6WAz0V-ch4mgj1T-lNYWdHJrTeg4c9GE';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
         let posts = [];
 
         document.addEventListener('DOMContentLoaded', () => {
             loadPosts();
-            checkAdminAccess();
-            setInterval(() => loadPosts(), 30000);
+            if(localStorage.getItem('isAdmin') === 'true') document.getElementById('adminLink').style.display = 'block';
         });
 
         async function loadPosts() {
             const container = document.getElementById('postsContainer');
-            if (!container) return;
-
-            if (!posts.length) {
-                container.innerHTML = `
-                    <div class="no-posts">
-                        <h2>Loading posts...</h2>
-                        <p>Please wait while we fetch the latest content.</p>
-                    </div>
-                `;
-            }
-
             try {
-                const { data, error } = await supabaseClient
-                    .from('posts')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) {
-                    throw error;
-                }
-
-                posts = (data || [])
-                    .map(normalizePost)
-                    .filter(post => post.title || post.content);
-
+                const { data, error } = await supabaseClient.from('posts').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+                posts = (data || []).map(normalizePost);
                 renderPosts();
             } catch (error) {
-                console.error('Failed to load posts:', error);
-                if (!posts.length) {
-                    container.innerHTML = `
-                        <div class="no-posts">
-                            <h2>无法加载文章</h2>
-                            <p>${escapeHtml(error.message || '请稍后再试。')}</p>
-                        </div>
-                    `;
-                }
+                container.innerHTML = `<div style="text-align:center; color:#999">Error loading posts: ${error.message}</div>`;
             }
         }
 
         function renderPosts() {
             const container = document.getElementById('postsContainer');
-            if (!container) return;
-
             if (!posts.length) {
-                container.innerHTML = `
-                    <div class="no-posts">
-                        <h2>No posts yet</h2>
-                        <p>Check back later for new content!</p>
-                    </div>
-                `;
+                container.innerHTML = `<div style="text-align:center; color:#999">No posts found.</div>`;
                 return;
             }
-
-            container.innerHTML = '';
-
-            posts.forEach(post => {
-                const postElement = document.createElement('div');
-                postElement.className = 'post-card';
-
+            container.innerHTML = posts.map(post => {
                 const { summaryHtml, fullHtml, shouldCollapse } = buildPostSections(post.content);
-                const postId = post.id;
-                const postIdJson = JSON.stringify(postId);
-
-                const metaParts = [];
-                if (post.date) {
-                    metaParts.push(`<span class="post-date">${escapeHtml(post.date)}</span>`);
-                }
-                if (post.type) {
-                    metaParts.push(`<span class="post-type">${escapeHtml(post.type)}</span>`);
-                }
-
-                const summaryClass = shouldCollapse ? 'post-summary' : 'post-summary is-hidden';
-                const fullClass = shouldCollapse ? 'post-full' : 'post-full is-visible';
-                const toggleButtonHtml = shouldCollapse
-                    ? `<button class="btn btn-secondary" id="toggleBtn-${postId}" onclick='togglePostContent(${postIdJson})'>View full</button>`
+                
+                const expandBtn = shouldCollapse 
+                    ? `<button class="btn" onclick="togglePost('${post.id}')" id="btn-${post.id}">
+                         <ion-icon name="resize-outline" class="btn-icon"></ion-icon> Expand
+                       </button>` 
                     : '';
-
-                postElement.innerHTML = `
+                
+                return `
+                <div class="post-card">
                     <div class="post-header">
+                        <div class="post-meta">${post.date} ${post.type ? `• ${post.type}` : ''}</div>
                         <div class="post-title">${escapeHtml(post.title)}</div>
-                        <div class="post-meta">${metaParts.join('')}</div>
                     </div>
                     <div class="post-content">
-                        ${post.image ? `<img src="${escapeHtml(post.image)}" alt="${escapeHtml(post.title)}" class="post-image">` : ''}
-                        <div class="post-body">
-                            <div class="${summaryClass}" id="postSummary-${postId}">${summaryHtml}</div>
-                            <div class="${fullClass}" id="postFull-${postId}">${fullHtml}</div>
-                        </div>
+                        ${post.image ? `<img src="${escapeHtml(post.image)}" class="post-image">` : ''}
+                        <div id="summary-${post.id}" class="post-summary">${summaryHtml}</div>
+                        <div id="full-${post.id}" class="post-full">${fullHtml}</div>
                     </div>
                     <div class="post-actions">
-                        ${toggleButtonHtml}
-                        <button class="btn btn-outline" onclick='copyPostContent(${postIdJson})'>Copy content</button>
+                        ${expandBtn}
+                        <button class="btn" onclick="copyContent('${post.id}')">
+                            <ion-icon name="copy-outline" class="btn-icon"></ion-icon> Copy Content
+                        </button>
                     </div>
-                `;
+                </div>`;
+            }).join('');
+            
+            if(window.Prism) Prism.highlightAll();
+        }
 
-                container.appendChild(postElement);
-                highlightWithin(postElement);
-            });
+        function togglePost(id) {
+            const full = document.getElementById(`full-${id}`);
+            const summary = document.getElementById(`summary-${id}`);
+            const btn = document.getElementById(`btn-${id}`);
+            
+            if (full.classList.contains('is-visible')) {
+                full.classList.remove('is-visible');
+                summary.classList.remove('is-hidden');
+                btn.innerHTML = `<ion-icon name="resize-outline" class="btn-icon"></ion-icon> Expand`;
+            } else {
+                full.classList.add('is-visible');
+                summary.classList.add('is-hidden');
+                btn.innerHTML = `<ion-icon name="chevron-up-outline" class="btn-icon"></ion-icon> Collapse`;
+            }
+        }
+
+        async function copyContent(id) {
+            const post = posts.find(p => String(p.id) === String(id));
+            if(!post || !post.content) return;
+            try {
+                await navigator.clipboard.writeText(post.content);
+                alert("Copied to clipboard!");
+            } catch(e) { alert("Failed to copy."); }
         }
 
         function normalizePost(post) {
-            if (!post || typeof post !== 'object') {
-                return {
-                    id: Date.now(),
-                    title: 'Untitled',
-                    content: '',
-                    date: new Date().toLocaleDateString(),
-                    image: null,
-                    type: null
-                };
-            }
-
-            let timestamp = Date.now();
-            if (post.created_at) {
-                const created = new Date(post.created_at);
-                if (!Number.isNaN(created.getTime())) {
-                    timestamp = created.getTime();
-                }
-            } else if (post.timestamp) {
-                const legacy = new Date(post.timestamp);
-                if (!Number.isNaN(legacy.getTime())) {
-                    timestamp = legacy.getTime();
-                }
-            }
-
             return {
-                id: post.id || `${Date.now()}-${Math.random()}`,
+                id: post.id || Date.now(),
                 title: post.title || 'Untitled',
-                content: post.content || post.postContent || post.code || '',
-                date: post.date || new Date(timestamp).toLocaleDateString(),
+                content: post.content || post.postContent || '',
+                date: new Date(post.created_at || Date.now()).toLocaleDateString(),
                 image: post.image || null,
                 type: post.type || null
             };
         }
 
-        function renderNotionContent(raw) {
-            if (!raw || !raw.trim()) {
-                return '';
-            }
-
-            const normalized = raw.replace(/\r\n/g, '\n');
-            const lines = normalized.split('\n');
-            const blocks = [];
-            let buffer = [];
-            let withinCode = false;
-            let codeHeader = '';
-            let codeLines = [];
-
-            const pushBuffer = () => {
-                if (buffer.length) {
-                    blocks.push(buffer.join('\n'));
-                    buffer = [];
-                }
-            };
-
-            lines.forEach(line => {
-                const trimmed = line.trim();
-                const lower = trimmed.toLowerCase();
-
-                if (withinCode) {
-                    if (lower === '/end_code') {
-                        blocks.push([codeHeader, ...codeLines].join('\n'));
-                        withinCode = false;
-                        codeHeader = '';
-                        codeLines = [];
-                    } else {
-                        codeLines.push(line);
-                    }
-                    return;
-                }
-
-                if (lower.startsWith('/code')) {
-                    pushBuffer();
-                    withinCode = true;
-                    codeHeader = trimmed;
-                    codeLines = [];
-                    return;
-                }
-
-                if (trimmed === '') {
-                    pushBuffer();
-                    return;
-                }
-
-                buffer.push(line);
-            });
-
-            pushBuffer();
-
-            if (withinCode) {
-                blocks.push([codeHeader, ...codeLines].join('\n'));
-            }
-
-            return blocks
-                .map(block => renderBlock(block.trim()))
-                .filter(Boolean)
-                .join('');
-        }
-
+        // --- CORE LOGIC FIX ---
         function buildPostSections(raw) {
-            const fallback = '<p style="color:#7f8c8d; margin:0;">(No content)</p>';
-            const normalized = (raw || '').replace(/\r\n/g, '\n');
-            const lines = normalized ? normalized.split('\n') : [];
-            const totalLines = lines.length;
-            const shouldCollapse = totalLines > 8;
-
-            const fullHtmlRaw = renderNotionContent(normalized);
-            const fullHtml = fullHtmlRaw || fallback;
-
-            if (!shouldCollapse) {
-                return {
-                    summaryHtml: fullHtml,
-                    fullHtml,
-                    shouldCollapse: false
-                };
-            }
-
-            const truncatedRaw = getTruncatedRaw(lines, 6);
-            const summaryRawHtml = renderNotionContent(truncatedRaw) || fallback;
-            const summaryHtml = summaryRawHtml + '<div class="post-summary-more">…</div>';
-
-            return {
-                summaryHtml,
-                fullHtml,
-                shouldCollapse: true
-            };
-        }
-
-        function getTruncatedRaw(lines, maxLines) {
-            const limited = lines.slice(0, maxLines);
-            let withinCode = false;
-
-            for (let i = 0; i < limited.length; i++) {
-                const trimmed = limited[i].trim().toLowerCase();
-                if (!withinCode && trimmed.startsWith('/code')) {
-                    withinCode = true;
-                } else if (withinCode && trimmed === '/end_code') {
-                    withinCode = false;
+            if (!raw) return { summaryHtml: '', fullHtml: '', shouldCollapse: false };
+            
+            const lines = raw.split('\n');
+            const LIMIT = 20; // Show 20 lines
+            const shouldCollapse = lines.length > LIMIT;
+            
+            const fullHtml = renderNotionContent(raw);
+            
+            // Smart truncation: don't cut inside a code block without closing it
+            let summaryRaw = raw;
+            if (shouldCollapse) {
+                const truncatedLines = lines.slice(0, LIMIT);
+                
+                // Check if we cut in the middle of a code block
+                let inCode = false;
+                for(let line of truncatedLines) {
+                    if(line.trim().startsWith('/code')) inCode = true;
+                    if(line.trim().startsWith('/end_code')) inCode = false;
                 }
+                
+                if(inCode) {
+                    truncatedLines.push('... (code truncated)');
+                    truncatedLines.push('/end_code');
+                } else {
+                    truncatedLines.push('...');
+                }
+                summaryRaw = truncatedLines.join('\n');
             }
 
-            if (withinCode) {
-                limited.push('/end_code');
-            }
-
-            return limited.join('\n');
+            const summaryHtml = shouldCollapse ? renderNotionContent(summaryRaw) : fullHtml;
+            return { summaryHtml, fullHtml, shouldCollapse };
         }
 
-        function renderBlock(block) {
-            if (!block) return '';
+        function renderNotionContent(text) {
+            if (!text) return '';
 
-            const lines = block.split('\n');
-            const firstLine = lines[0].trim();
+            // 1. Split text into segments: Code blocks vs Normal text
+            // Regex to find /code ... /end_code blocks across multiple lines
+            const parts = text.split(/(\/code\s*\w*[\s\S]*?\/end_code)/g);
 
-            if (firstLine.startsWith('/code')) {
-                const parts = firstLine.split(/\s+/);
-                const language = (parts[1] || 'plaintext').toLowerCase();
-                const code = lines.slice(1).join('\n');
-                return `<pre class="notion-code"><code class="language-${language}">${escapeHtml(code)}</code></pre>`;
-            }
-
-            if (firstLine.startsWith('### ')) {
-                return `<h3>${escapeHtml(firstLine.slice(4))}</h3>`;
-            }
-
-            if (firstLine.startsWith('## ')) {
-                return `<h2>${escapeHtml(firstLine.slice(3))}</h2>`;
-            }
-
-            if (firstLine.startsWith('# ')) {
-                return `<h1>${escapeHtml(firstLine.slice(2))}</h1>`;
-            }
-
-            if (lines.every(line => line.trim().startsWith('- '))) {
-                const items = lines
-                    .map(line => `<li>${escapeHtml(line.trim().slice(2))}</li>`)
-                    .join('');
-                return `<ul>${items}</ul>`;
-            }
-
-            if (lines.every(line => /^\d+\.\s+/.test(line.trim()))) {
-                const items = lines
-                    .map(line => {
-                        const text = line.trim().replace(/^\d+\.\s+/, '');
-                        return `<li>${escapeHtml(text)}</li>`;
-                    })
-                    .join('');
-                return `<ol>${items}</ol>`;
-            }
-
-            if (lines.every(line => line.trim().startsWith('> '))) {
-                const content = lines
-                    .map(line => escapeHtml(line.trim().slice(2)))
-                    .join('<br>');
-                return `<blockquote>${content}</blockquote>`;
-            }
-
-            const paragraph = lines
-                .map(line => escapeHtml(line))
-                .join('<br>');
-            return `<p>${paragraph}</p>`;
+            return parts.map(part => {
+                if (part.trim().startsWith('/code')) {
+                    // -- HANDLE CODE BLOCK --
+                    // Extract language
+                    const match = part.match(/\/code\s*(\w*)/);
+                    const lang = match ? match[1] : 'plaintext';
+                    
+                    // Clean tags
+                    let code = part.replace(/\/code\s*\w*/, '').replace(/\/end_code/, '').trim();
+                    
+                    // Escape HTML inside code, but DO NOT replace \n with <br>
+                    code = escapeHtml(code);
+                    
+                    return `<pre class="notion-code"><code class="language-${lang}">${code}</code></pre>`;
+                } else {
+                    // -- HANDLE NORMAL TEXT --
+                    let html = escapeHtml(part);
+                    
+                    // Apply Markdown
+                    html = html
+                        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                        .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>')
+                        .replace(/\*\*(.*)\*\*/gim, '<b>$1</b>')
+                        .replace(/\*(.*)\*/gim, '<i>$1</i>')
+                        .replace(/\n/g, '<br>'); // Only use <br> here!
+                    
+                    return html;
+                }
+            }).join('');
         }
 
         function escapeHtml(text) {
-            return String(text || '')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;');
-        }
-
-        function highlightWithin(element) {
-            if (!window.Prism || !element) return;
-            const codeBlocks = element.querySelectorAll('code');
-            codeBlocks.forEach(block => window.Prism.highlightElement(block));
-        }
-
-        function togglePostContent(id) {
-            const summaryEl = document.getElementById(`postSummary-${id}`);
-            const fullEl = document.getElementById(`postFull-${id}`);
-            const toggleBtn = document.getElementById(`toggleBtn-${id}`);
-            if (!summaryEl || !fullEl || !toggleBtn) {
-                return;
-            }
-
-            const isExpanded = fullEl.classList.contains('is-visible');
-
-            if (isExpanded) {
-                fullEl.classList.remove('is-visible');
-                summaryEl.classList.remove('is-hidden');
-                toggleBtn.textContent = 'View full';
-            } else {
-                fullEl.classList.add('is-visible');
-                summaryEl.classList.add('is-hidden');
-                toggleBtn.textContent = 'Hide';
-                highlightWithin(fullEl);
-            }
-        }
-
-        async function copyPostContent(id) {
-            const post = posts.find(item => String(item.id) === String(id));
-            if (!post || !post.content) {
-                alert('No content available to copy.');
-                return;
-            }
-
-            const textToCopy = post.content;
-
-            try {
-                await navigator.clipboard.writeText(textToCopy);
-                alert('Post content copied to clipboard!');
-            } catch (error) {
-                const textarea = document.createElement('textarea');
-                textarea.value = textToCopy;
-                textarea.setAttribute('readonly', '');
-                textarea.style.position = 'absolute';
-                textarea.style.left = '-9999px';
-                document.body.appendChild(textarea);
-                textarea.focus();
-                textarea.select();
-
-                try {
-                    if (!document.execCommand('copy')) {
-                        throw new Error('Copy command failed');
-                    }
-                    alert('Post content copied to clipboard!');
-                } catch (fallbackError) {
-                    console.error('Copy failed:', fallbackError);
-                    alert('Unable to copy content. Please copy manually.');
-                } finally {
-                    document.body.removeChild(textarea);
-                }
-            }
-        }
-
-        function checkAdminAccess() {
-            const isAdmin = localStorage.getItem('isAdminAuthenticated') === 'true';
-            if (isAdmin) {
-                const adminLink = document.getElementById('adminLink');
-                if (adminLink) {
-                    adminLink.style.display = 'block';
-                }
-            }
+            return (text || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
         }
     </script>
 </body>

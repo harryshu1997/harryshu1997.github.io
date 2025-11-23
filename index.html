@@ -4,17 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zhihao Shu - Academic Homepage</title>
-    <link        .affiliation {
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 500;
-            transition: font-size 0.3s ease-out;
-        }icon type="image/svg+xml" href="images/favicon.svg">
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
-    <link rel="alternate icon" href="images/favicon.ico">
-    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
     <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #c0392b; /* Deep Red */
+            --accent-hover: #e74c3c;
+            --bg-color: #faf9f6; /* Warm Off-white */
+            --card-bg: #ffffff;
+            --text-color: #4a5568;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -22,444 +32,352 @@
         }
         
         body {
-            font-family: Georgia, serif;
-            line-height: 1.7;
-            color: #333;
-            background: white;
-            padding: 0;
-            margin: 0;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            -webkit-font-smoothing: antialiased;
         }
         
-        .container {
-            width: 100%;
-            margin: 0;
-            background: white;
-            padding: 40px 50px;
+        /* Typography */
+        h1, h2, h3, .nav-title, .affiliation {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
         }
-        
-        .main-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding-top: 85px;
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
         }
-        
+
+        a:hover {
+            color: var(--accent-hover);
+        }
+
+        /* Navigation - Glassmorphism */
         .nav-header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             z-index: 1000;
-            background: #1a252f;
-            padding: 15px 40px;
-            border-bottom: none;
-            width: 100%;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 15px 50px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: all 0.3s ease;
         }
         
+        .nav-header.scrolled-nav {
+            box-shadow: var(--shadow);
+            padding: 10px 50px;
+        }
+
         .nav-title {
-            font-size: 1.6em;
-            font-weight: normal;
-            margin: 0;
-            color: white;
-        }
-        
-        .nav-links {
-            font-size: 1em;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
         }
         
         .nav-links a {
-            color: #ecf0f1;
-            text-decoration: none;
-            margin: 0 12px;
-            transition: color 0.3s ease;
+            color: var(--primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95em;
+            margin-left: 25px;
+            position: relative;
+            opacity: 0.7;
         }
         
-        .nav-links a:hover {
-            color: #3498db;
-            text-decoration: none;
+        .nav-links a:hover, .nav-links a.current {
+            opacity: 1;
+            color: var(--accent);
         }
-        
-        .nav-links a.current {
-            font-weight: bold;
-            color: #e74c3c;
-        }
-        
+
+        /* Hero Section */
         .header {
             width: 100%;
-            height: 75vh;
-            min-height: 500px;
-            background-image: url('images/background.jpg');
+            height: 60vh;
+            min-height: 450px;
+            /* Update this URL to your actual image path */
+            background-image: url('images/background.jpg'); 
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
             background-attachment: fixed;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            margin: 0;
-            padding: 60px 50px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            transition: height 0.3s ease-out, padding 0.3s ease-out;
-            overflow: hidden;
-        }
-        
-        .header.scrolled {
-            height: 200px;
-            min-height: 200px;
-            padding: 20px 50px;
+            margin-top: 60px;
         }
         
         .header::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.4);
+            inset: 0;
+            background: linear-gradient(135deg, rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.7));
             z-index: 1;
         }
         
         .header-content {
             display: flex;
             align-items: center;
-            gap: 40px;
+            gap: 50px;
             position: relative;
             z-index: 2;
-            max-width: 1200px;
+            max-width: 1000px;
             width: 100%;
-            color: white;
-            transition: all 0.3s ease-out;
+            padding: 0 20px;
+            animation: fadeInUp 0.8s ease-out;
         }
-        
-        .header.scrolled .header-content {
-            gap: 20px;
-        }
-        
-        .header.scrolled .profile-photo {
-            width: 80px;
-            height: 80px;
-        }
-        
-        .header.scrolled h1 {
-            font-size: 1.5em;
-        }
-        
-        .header.scrolled .affiliation {
-            font-size: 1em;
-        }
-        
-        .header.scrolled .contact-links {
-            font-size: 0.9em;
-        }
-        
+
         .profile-photo {
-            width: 160px;
-            height: 160px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 4px solid rgba(255, 255, 255, 0.8);
+            width: 180px;
+            height: 180px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 12px;
-            text-align: center;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
             overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-            transition: width 0.3s ease-out, height 0.3s ease-out, transform 0.2s ease;
-            user-select: none;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
         }
         
+        .profile-photo:hover {
+            transform: scale(1.05);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
         .profile-photo img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 50%;
         }
         
-        .header-info {
-            flex: 1;
-            min-width: 300px;
-        }
-        
-        h1 {
-            font-size: 2.5em;
-            font-weight: normal;
-            margin-bottom: 8px;
+        .header-info h1 {
+            font-size: 3em;
             color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            transition: font-size 0.3s ease-out;
-        }
-        
-        .divider {
-            height: 2px;
-            background: rgba(255, 255, 255, 0.4);
-            margin: 10px 0 15px 0;
-            border-radius: 1px;
+            margin-bottom: 5px;
+            line-height: 1.1;
         }
         
         .affiliation {
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 300;
-        }
-        
-                .contact-links {
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.5;
-            transition: font-size 0.3s ease-out;
-        }
-        
-        .contact-links a {
-            color: #FFE082;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        
-        .contact-links a:hover {
-            color: #FFF176;
-            text-decoration: underline;
-        }
-        
-        .bio {
-            font-size: 1.05em;
-            margin-bottom: 35px;
-            text-align: justify;
-        }
-        
-        h2 {
             font-size: 1.4em;
-            font-weight: normal;
-            margin: 35px 0 15px 0;
-            color: #2c3e50;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 400;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .contact-links {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95em;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .contact-links a {
+            color: #fff;
+            text-decoration-color: rgba(255,255,255,0.3);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 900px;
+            margin: -60px auto 50px; /* Overlap effect */
+            position: relative;
+            z-index: 10;
+            padding: 0 20px;
         }
         
-        .section-content {
-            font-size: 1.05em;
-            margin-bottom: 25px;
-            text-align: justify;
+        .main-card {
+            background: var(--card-bg);
+            padding: 60px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+
+        /* Section Styling */
+        h2 {
+            font-size: 1.8em;
+            margin: 40px 0 25px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        .projects-list {
-            margin: 20px 0;
+        h2:first-of-type {
+            margin-top: 10px;
         }
-        
-        .projects-list li {
+
+        .bio {
+            font-size: 1.15em;
+            line-height: 1.9;
+            color: var(--primary);
+            margin-bottom: 40px;
+        }
+
+        /* Project Grid Cards */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .project-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .project-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--accent);
+        }
+
+        .project-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15em;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
             margin-bottom: 8px;
-            list-style: none;
-            position: relative;
-            padding-left: 15px;
+        }
+
+        .project-meta {
+            font-size: 0.9em;
+            color: #718096;
+            margin-bottom: 8px;
+        }
+
+        .project-meta .venue {
+            font-weight: 600;
+            color: var(--accent);
         }
         
-        .projects-list li:before {
-            content: "-";
+        .project-authors {
+            font-size: 0.9em;
+            line-height: 1.5;
+            color: var(--text-color);
+        }
+
+        /* Timeline Experience */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin-top: 20px;
+        }
+
+        .timeline::before {
+            content: '';
             position: absolute;
             left: 0;
+            top: 5px;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
         }
-        
-        .project-name {
-            font-weight: bold;
-        }
-        
-        .project-link {
-            color: #2980b9;
-            text-decoration: none;
-        }
-        
-        .project-link:hover {
-            text-decoration: underline;
-        }
-        
-        .experience-list {
-            margin: 20px 0;
-        }
-        
-        .experience-item {
-            margin-bottom: 12px;
-            list-style: none;
+
+        .timeline-item {
             position: relative;
-            padding-left: 15px;
+            margin-bottom: 30px;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: -34px;
+            top: 6px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 2px solid var(--accent);
+        }
+
+        .timeline-title {
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
         }
         
-        .experience-item:before {
-            content: "-";
+        .timeline-date {
+            font-size: 0.85em;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* Activities List */
+        .activities-list {
+            list-style: none;
+        }
+
+        .activities-list li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .activities-list li::before {
+            content: '•';
+            color: var(--accent);
+            font-size: 1.5em;
             position: absolute;
             left: 0;
+            top: -5px;
+            line-height: 1;
         }
-        
-        .experience-title {
-            font-weight: bold;
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+            font-size: 0.9em;
         }
-        
-        .experience-detail {
-            color: #555;
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        
-        .activities {
-            font-size: 1.05em;
+
+        /* Feedback for Admin Click */
+        #clickFeedback {
+            font-family: 'Inter', sans-serif;
+            backdrop-filter: blur(8px);
         }
-        
-        .activities ul {
-            margin: 15px 0;
-            padding-left: 0;
-        }
-        
-        .activities li {
-            margin-bottom: 6px;
-            list-style: none;
-            position: relative;
-            padding-left: 15px;
-        }
-        
-        .activities li:before {
-            content: "-";
-            position: absolute;
-            left: 0;
-        }
-        
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .container {
-                padding: 30px 25px;
-            }
-            
-            .main-content {
-                padding-top: 70px;
-            }
-            
-            .nav-header {
-                padding: 12px 20px;
-                flex-direction: column;
-                align-items: center;
-                gap: 8px;
-            }
-            
-            .nav-title {
-                font-size: 1.4em;
-            }
-            
-            .nav-links a {
-                margin: 0 8px;
-                font-size: 0.9em;
-            }
-            
-            .header {
-                height: 60vh;
-                min-height: 400px;
-                padding: 40px 25px;
-                background-attachment: scroll;
-            }
-            
-            .header.scrolled {
-                height: 150px;
-                min-height: 150px;
-                padding: 15px 25px;
-            }
-            
-            .header.scrolled .profile-photo {
-                width: 60px;
-                height: 60px;
-            }
-            
-            .header.scrolled h1 {
-                font-size: 1.2em;
-            }
-            
-            .header-content {
-                flex-direction: column;
-                text-align: center;
-                gap: 25px;
-            }
-            
-            .profile-photo {
-                width: 120px;
-                height: 120px;
-            }
-            
-            .header-info {
-                min-width: auto;
-                width: 100%;
-            }
-            
-            h1 {
-                font-size: 2em;
-            }
-            
-            .nav-links a {
-                margin: 0 8px;
-                font-size: 0.95em;
-            }
-        }
-        
-        @media (max-width: 640px) {
-            .nav-header {
-                margin: -30px -25px 30px -25px;
-                padding: 15px 20px;
-            }
-            
-            .nav-title {
-                font-size: 1.5em;
-                margin-bottom: 12px;
-            }
-            
-            .nav-links a {
-                margin: 0 6px;
-                font-size: 0.9em;
-            }
-            
-            .header {
-                height: 55vh;
-                min-height: 350px;
-                flex-direction: column;
-                padding: 20px 15px;
-                text-align: center;
-            }
-            
-            .header.scrolled {
-                height: 120px;
-                min-height: 120px;
-                padding: 10px 15px;
-            }
-            
-            .header.scrolled .profile-photo {
-                width: 50px;
-                height: 50px;
-            }
-            
-            .header.scrolled h1 {
-                font-size: 1em;
-            }
-            
-            .profile-photo {
-                width: 100px;
-                height: 100px;
-            }
-            
-            h1 {
-                font-size: 1.8em;
-            }
-            
-            .affiliation {
-                font-size: 1.1em;
-            }
-            
-            .contact-links {
-                font-size: 0.9em;
-            }
+            .header { height: auto; padding: 100px 0 60px; min-height: auto; }
+            .header-content { flex-direction: column; text-align: center; gap: 20px; }
+            .header-info h1 { font-size: 2.2em; }
+            .main-card { padding: 30px 20px; }
+            .nav-header { padding: 15px 20px; }
+            .nav-links { display: none; /* Can add hamburger menu logic here */ }
         }
     </style>
 </head>
 <body>
-    <div class="nav-header">
+
+    <nav class="nav-header" id="navbar">
         <div class="nav-title">Zhihao Shu</div>
         <div class="nav-links">
             <a href="index.html" class="current">Home</a>
@@ -469,127 +387,132 @@
             <a href="pages/teaching.html">Teaching</a>
             <a href="pages/faq.html">FAQ</a>
         </div>
-    </div>
+    </nav>
     
-    <div class="header">
+    <header class="header">
         <div class="header-content">
-            <div class="profile-photo" id="profilePhoto" style="cursor: pointer;">
+            <div class="profile-photo" id="profilePhoto" style="cursor: pointer;" title="5 clicks for admin">
                 <img src="images/profile.jpg" alt="Zhihao Shu">
             </div>
             <div class="header-info">
-                <h1>舒志豪(Zhihao Shu)</h1>
-                <div class="divider"></div>
-                <div class="affiliation">University of Georgia</div>
+                <h1>Zhihao Shu</h1>
+                <div class="affiliation">Ph.D. Student @ University of Georgia</div>
                 <div class="contact-links">
-                    Email: Zhihao.Shu@uga.edu<br>
-                    Google Scholar: <a href="https://scholar.google.com/citations?user=dkxKQq0AAAAJ&hl=en">Zhihao Shu</a><br>
-                    Github: <a href="https://github.com/harryshu1997">@harryshu1997</a><br>
-                    Office: Boyd Research Building 612
+                    <span><ion-icon name="mail-outline" style="vertical-align: middle;"></ion-icon> Zhihao.Shu@uga.edu</span>
+                    <span><ion-icon name="location-outline" style="vertical-align: middle;"></ion-icon> Boyd Research Building 612</span>
+                    <div>
+                        <a href="https://scholar.google.com/citations?user=dkxKQq0AAAAJ&hl=en">Google Scholar</a> • 
+                        <a href="https://github.com/harryshu1997">GitHub</a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </header>
     
     <div class="container">
-        <div class="main-content">
-        
-        <div class="bio">
-            I am a Ph.D student in the <a href="https://computing.uga.edu/">School of Computing</a> at UGA.   
-        
-            I received my Master's and Bachelor's degree from NYU Courant and UW-Madison+UD.
-        </div>
-        
-        <h2>Research</h2>
-        <div class="section-content">
-            I am interested in VR/AR, AI, and edge computing. Nothing fancy, Just Do It. 
-            I am working on exciting problems across LLM and accelerating AI inference at the edge.
+        <div class="main-card">
             
-        </div>
-        
-        <ul class="projects-list">
-            <li><a href="https://neurips.cc/virtual/2024/poster/93845" class="project-link project-name">Real-time Core-Periphery Guided ViT with Smart Data Layout Selection on Mobile Devices</a> - NeurIPS 2024. Zhihao Shu, Xiaowei Yu, Zihao Wu, Wenqi Jia, Yinchen Shi, Miao Yin, Tianming Liu, Dajiang Zhu, Wei Niu.</li>
-            <li><a href="https://arxiv.org/abs/2412.12444" class="project-link project-name">LazyDiT: Lazy Learning for the Acceleration of Diffusion Transformers</a> - AAAI 2025. Xuan Shen, Zhao Song, Yufa Zhou, Bo Chen, Yanyu Li, Yifan Gong, Kai Zhang, Hao Tan, Jason Kuen, Henghui Ding, Zhihao Shu, Wei Niu, Pu Zhao, Yanzhi Wang, Jiuxiang Gu.</li>
-            <li><a href="https://arxiv.org/html/2402.10787v1" class="project-link project-name">EdgeQAT: Entropy and Distribution Guided Quantization-Aware Training for the Acceleration of Lightweight LLMs on the Edge</a> - ArXiv. Xuan Shen, Zhenglun Kong, Changdi Yang, Zhaoyang Han, Lei Lu, Peiyan Dong, Cheng Lyu, Chih-hsiang Li, Xuehang Guo, Zhihao Shu, Wei Niu, Miriam Leeser, Pu Zhao, Yanzhi Wang.</li>
-            <li><a href="https://arxiv.org/abs/2404.13528" class="project-link project-name">SmartMem: Layout Transformation Elimination and Adaptation for Efficient DNN Execution on Mobile</a> - ASPLOS 2024. Wei Niu, Md Musfiqur Rahman Sanim, Zhihao Shu, Jiexiong Guan, Xipeng Shen, Miao Yin, Gagan Agrawal, Bin Ren.</li>
-        </ul>
-        
-        <h2>Activity and Services</h2>
-        <div class="activities">
-            <ul>
-                <li>Reviewer for NeurIPS 2025.</li>
-                <li>Reviewer for AAAI 2025.</li>
-                <li>Reviewer for IEEE MASS 2024.</li>
-                <li>Reviewer and Artifact Evaluator for PPoPP 2024.</li>
-                <li>PC Memeber for ICCD 2025.</li>
+            <div class="bio">
+                <p>I am a Ph.D. student in the <a href="https://computing.uga.edu/">School of Computing</a> at the University of Georgia. I received my Master's and Bachelor's degrees from NYU Courant and UW-Madison + UD.</p>
+            </div>
+            
+            <h2><ion-icon name="flask-outline"></ion-icon> Research</h2>
+            <div class="section-content">
+                <p style="margin-bottom: 20px;">I am interested in VR/AR, AI, and edge computing. <em>Nothing fancy, Just Do It.</em> I am working on exciting problems across Large Language Models (LLMs) and accelerating AI inference at the edge.</p>
+                
+                <div class="projects-grid">
+                    <div class="project-card">
+                        <a href="https://neurips.cc/virtual/2024/poster/93845" class="project-title">Real-time Core-Periphery Guided ViT with Smart Data Layout Selection on Mobile Devices</a>
+                        <div class="project-meta">
+                            <span class="venue">NeurIPS 2024</span>
+                        </div>
+                        <div class="project-authors">
+                            <b>Zhihao Shu</b>, Xiaowei Yu, Zihao Wu, Wenqi Jia, Yinchen Shi, Miao Yin, Tianming Liu, Dajiang Zhu, Wei Niu.
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <a href="https://arxiv.org/abs/2412.12444" class="project-title">LazyDiT: Lazy Learning for the Acceleration of Diffusion Transformers</a>
+                        <div class="project-meta">
+                            <span class="venue">AAAI 2025</span>
+                        </div>
+                        <div class="project-authors">
+                            Xuan Shen, Zhao Song... <b>Zhihao Shu</b>, Wei Niu, Pu Zhao, Yanzhi Wang, Jiuxiang Gu.
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <a href="https://arxiv.org/html/2402.10787v1" class="project-title">EdgeQAT: Entropy and Distribution Guided Quantization-Aware Training</a>
+                        <div class="project-meta">
+                            <span class="venue">ArXiv</span>
+                        </div>
+                        <div class="project-authors">
+                            Xuan Shen... <b>Zhihao Shu</b>, Wei Niu, Miriam Leeser, Pu Zhao, Yanzhi Wang.
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <a href="https://arxiv.org/abs/2404.13528" class="project-title">SmartMem: Layout Transformation Elimination and Adaptation</a>
+                        <div class="project-meta">
+                            <span class="venue">ASPLOS 2024</span>
+                        </div>
+                        <div class="project-authors">
+                            Wei Niu, Md Musfiqur Rahman Sanim, <b>Zhihao Shu</b>, Jiexiong Guan, Xipeng Shen, Miao Yin, Gagan Agrawal, Bin Ren.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h2><ion-icon name="briefcase-outline"></ion-icon> Experience</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <span class="timeline-date">Present</span>
+                    <span class="timeline-title">Ph.D. Student @ UGA</span>
+                    <span class="experience-detail">Advising with <a href="https://newway99.gitlab.io/">Dr. Niu</a></span>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-date">Jun 2021 - Aug 2021 & 2020</span>
+                    <span class="timeline-title">Software Engineer Intern</span>
+                    <span class="experience-detail">Robotrak Technologies</span>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-date">Jun 2020 - Aug 2020</span>
+                    <span class="timeline-title">Teaching Assistant</span>
+                    <span class="experience-detail">NYU Shanghai (Block Chain & Distributed Computing)</span>
+                </div>
+            </div>
+
+            <h2><ion-icon name="star-outline"></ion-icon> Activity & Services</h2>
+            <ul class="activities-list">
+                <li>Reviewer for NeurIPS 2025</li>
+                <li>Reviewer for AAAI 2025</li>
+                <li>Reviewer for IEEE MASS 2024</li>
+                <li>Reviewer and Artifact Evaluator for PPoPP 2024</li>
+                <li>PC Member for ICCD 2025</li>
             </ul>
-        </div>
-        
-        <h2>Information</h2>
-        <div class="section-content">
-            Fun things: <a href="pages/faq.html">FAQ</a>
-        </div>
-        
-        <h2>Experience</h2>
-        <ul class="experience-list">
-            <li class="experience-item">
-                <span class="experience-title">UGA, present</span> 
-                <span class="experience-detail">Ph.D. Student with <a href="https://newway99.gitlab.io/">Dr. Niu</a></span>
-            </li>
-            <li class="experience-item">
-                <span class="experience-title">Robotrak Technologies, Jun 2021 - Aug. 2021 | Jun 2020 - Aug. 2020</span> 
-                <span class="experience-detail">Software Engineer Intern</span>
-            </li>
-            <li class="experience-item">
-                <span class="experience-title">(NYU Shanghai) Teaching Assistant, Jun 2020 - Aug 2020</span> 
-                <span class="experience-detail">Block Chain && Distributed Computing TA</span>
-            </li>
-        </ul>
         </div>
     </div>
     
+    <div class="footer">
+        &copy; <script>document.write(new Date().getFullYear())</script> Zhihao Shu. <br>
+        Nothing fancy, Just Do It.
+    </div>
+
     <script>
-        // 滚动效果处理
-        let lastScrollY = window.scrollY;
-        let ticking = false;
-        
-        function updateHeader() {
-            const header = document.querySelector('.header');
-            if (!header) return;
-            
-            const scrollY = window.scrollY;
-            const headerHeight = header.offsetHeight;
-            
-            // 当滚动超过头部高度的30%时，应用scrolled类
-            if (scrollY > headerHeight * 0.3) {
-                header.classList.add('scrolled');
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled-nav');
             } else {
-                header.classList.remove('scrolled');
+                nav.classList.remove('scrolled-nav');
             }
-            
-            lastScrollY = scrollY;
-            ticking = false;
-        }
-        
-        function requestTick() {
-            if (!ticking) {
-                requestAnimationFrame(updateHeader);
-                ticking = true;
-            }
-        }
-        
-        // 监听滚动事件
-        window.addEventListener('scroll', requestTick);
-        
-        // 页面加载时初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            updateHeader();
-            initAdminAccess();
         });
-        
-        // 管理员访问逻辑：点击头像5次
+
+        // Admin Access Logic (Kept Original Logic)
         let clickCount = 0;
         let clickTimer = null;
-        const CLICK_TIMEOUT = 3000; // 3秒内点击5次有效
+        const CLICK_TIMEOUT = 3000;
         const REQUIRED_CLICKS = 5;
         
         function initAdminAccess() {
@@ -603,31 +526,25 @@
             event.preventDefault();
             clickCount++;
             
-            // 清除之前的计时器
-            if (clickTimer) {
-                clearTimeout(clickTimer);
-            }
+            if (clickTimer) clearTimeout(clickTimer);
             
-            // 添加视觉反馈
+            // Visual bounce
             const photo = event.currentTarget;
-            photo.style.animation = 'none';
-            photo.offsetHeight; // 强制重绘
-            photo.style.animation = 'profileClick 0.3s ease';
-            
-            // 显示点击进度
+            photo.style.transform = 'scale(0.95)';
+            setTimeout(() => photo.style.transform = 'scale(1)', 150);
+
             if (clickCount === 1) {
-                showClickFeedback(`🖱️ 连续快速点击头像 ${REQUIRED_CLICKS} 次进入管理模式\n还需点击 ${REQUIRED_CLICKS - clickCount} 次...`);
+                showClickFeedback(`🖱️ ${REQUIRED_CLICKS - clickCount} more clicks for Admin Mode`);
             } else if (clickCount < REQUIRED_CLICKS) {
-                showClickFeedback(`继续点击... 还需 ${REQUIRED_CLICKS - clickCount} 次`);
+                showClickFeedback(`${REQUIRED_CLICKS - clickCount} more...`);
             } else if (clickCount === REQUIRED_CLICKS) {
-                showClickFeedback('🎉 解锁成功！正在进入管理模式...', 'success');
+                showClickFeedback('🎉 Access Granted! Redirecting...', 'success');
                 setTimeout(() => {
                     window.location.href = 'pages/admin.html';
                 }, 800);
                 return;
             }
             
-            // 设置重置计时器
             clickTimer = setTimeout(() => {
                 clickCount = 0;
                 hideClickFeedback();
@@ -635,64 +552,48 @@
         }
         
         function showClickFeedback(message, type = 'info') {
-            // 移除现有的反馈
             const existing = document.getElementById('clickFeedback');
-            if (existing) {
-                existing.remove();
-            }
+            if (existing) existing.remove();
             
-            // 创建新的反馈元素
             const feedback = document.createElement('div');
             feedback.id = 'clickFeedback';
             feedback.style.cssText = `
                 position: fixed;
-                top: 50%;
+                bottom: 30px;
                 left: 50%;
-                transform: translate(-50%, -50%);
-                background: ${type === 'success' ? '#d4edda' : '#fff3cd'};
-                color: ${type === 'success' ? '#155724' : '#856404'};
-                padding: 15px 25px;
-                border-radius: 10px;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                transform: translateX(-50%);
+                background: ${type === 'success' ? '#27ae60' : '#2c3e50'};
+                color: white;
+                padding: 12px 24px;
+                border-radius: 30px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
                 z-index: 10000;
-                font-size: 16px;
-                font-weight: bold;
-                border: 2px solid ${type === 'success' ? '#c3e6cb' : '#ffeaa7'};
+                font-size: 14px;
+                font-weight: 500;
                 opacity: 0;
-                transition: opacity 0.3s ease;
+                transition: opacity 0.3s ease, transform 0.3s ease;
+                transform: translate(-50%, 20px);
             `;
             feedback.textContent = message;
-            
             document.body.appendChild(feedback);
             
-            // 淡入效果
-            setTimeout(() => {
+            // Animate in
+            requestAnimationFrame(() => {
                 feedback.style.opacity = '1';
-            }, 10);
+                feedback.style.transform = 'translate(-50%, 0)';
+            });
         }
         
         function hideClickFeedback() {
             const feedback = document.getElementById('clickFeedback');
             if (feedback) {
                 feedback.style.opacity = '0';
-                setTimeout(() => {
-                    feedback.remove();
-                }, 300);
+                feedback.style.transform = 'translate(-50%, 20px)';
+                setTimeout(() => feedback.remove(), 300);
             }
         }
+
+        document.addEventListener('DOMContentLoaded', initAdminAccess);
     </script>
-    
-    <style>
-        @keyframes profileClick {
-            0% { transform: scale(1); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
-            50% { transform: scale(1.05); box-shadow: 0 12px 40px rgba(231, 76, 60, 0.4); }
-            100% { transform: scale(1); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
-        }
-        
-        .profile-photo:hover {
-            transform: scale(1.02);
-            transition: transform 0.2s ease;
-        }
-    </style>
 </body>
 </html>
