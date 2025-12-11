@@ -1,68 +1,295 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Zhihao Shu</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.5/dist/umd/supabase.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
-    
+
     <style>
         /* ... (Same Styles as previous Admin Panel) ... */
-        * { box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; margin: 0; background: #faf9f6; color: #333; padding-bottom: 50px; }
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background: #faf9f6;
+            color: #333;
+            padding-bottom: 50px;
+        }
+
         /* Header */
-        .nav-header { background: #2c3e50; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .nav-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.2em; white-space: nowrap; margin-right: 20px; }
-        .nav-links { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-        .nav-links a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.9em; transition: color 0.2s; font-weight: 500; }
-        .nav-links a:hover { color: white; }
-        .nav-separator { border-left: 1px solid rgba(255,255,255,0.2); height: 20px; margin: 0 5px; }
-        .logout-btn { color: #ff6b6b !important; font-weight: 600; cursor: pointer; }
-        
-        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
-        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 30px; border: 1px solid #e2e8f0; }
-        h2 { border-bottom: 1px solid #eee; padding-bottom: 15px; margin-top: 0; color: #2c3e50; font-family: 'Playfair Display', serif; }
-        
+        .nav-header {
+            background: #2c3e50;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1.2em;
+            white-space: nowrap;
+            margin-right: 20px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: color 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: white;
+        }
+
+        .nav-separator {
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            height: 20px;
+            margin: 0 5px;
+        }
+
+        .logout-btn {
+            color: #ff6b6b !important;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
+        }
+
+        h2 {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-top: 0;
+            color: #2c3e50;
+            font-family: 'Playfair Display', serif;
+        }
+
         /* Tabs */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; }
-        .tab-btn { padding: 10px 20px; background: transparent; border: none; font-family: 'Inter', sans-serif; font-weight: 600; color: #7f8c8d; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; font-size: 1em; transition: 0.2s; }
-        .tab-btn:hover { color: #2c3e50; }
-        .tab-btn.active { border-bottom: 2px solid #c0392b; color: #c0392b; }
-        
-        .tab-content { display: none; animation: fadeIn 0.3s ease; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: #7f8c8d;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-size: 1em;
+            transition: 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: #2c3e50;
+        }
+
+        .tab-btn.active {
+            border-bottom: 2px solid #c0392b;
+            color: #c0392b;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         /* Forms */
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: 600; margin-bottom: 5px; color: #555; font-size: 0.9em; }
-        input[type="text"], input[type="date"], input[type="email"], input[type="password"], textarea, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif; }
-        input:focus, textarea:focus { outline: none; border-color: #c0392b; }
-        textarea { height: 120px; resize: vertical; line-height: 1.5; }
-        
-        .row { display: flex; gap: 15px; }
-        .col { flex: 1; }
-        
-        .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; color: white; font-weight: 600; font-size: 0.95em; transition: 0.2s; }
-        .btn-primary { background: #2c3e50; }
-        .btn-success { background: #27ae60; }
-        .btn-warning { background: #f39c12; }
-        .btn-danger { background: #e74c3c; padding: 5px 12px; font-size: 0.85em; }
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-        
-        .drag-area { border: 2px dashed #ddd; padding: 30px; text-align: center; border-radius: 8px; cursor: pointer; transition: 0.3s; margin-bottom: 15px; background: #fcfcfc; }
-        .drag-area:hover { border-color: #c0392b; background: #fff5f5; }
-        
-        #authScreen { height: 100vh; display: flex; align-items: center; justify-content: center; background: #2c3e50; }
-        .login-box { background: white; padding: 40px; border-radius: 8px; width: 350px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .loading-text { color: #d35400; font-weight: bold; margin-top: 10px; display:block;}
-        .note-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; }
-        .note-item:last-child { border-bottom: none; }
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="email"],
+        input[type="password"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #c0392b;
+        }
+
+        textarea {
+            height: 120px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .col {
+            flex: 1;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: #2c3e50;
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            padding: 5px 12px;
+            font-size: 0.85em;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .drag-area {
+            border: 2px dashed #ddd;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 15px;
+            background: #fcfcfc;
+        }
+
+        .drag-area:hover {
+            border-color: #c0392b;
+            background: #fff5f5;
+        }
+
+        #authScreen {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2c3e50;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            width: 350px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .loading-text {
+            color: #d35400;
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+
+        .note-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .note-item:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
+
 <body>
 
     <div id="authScreen">
@@ -110,7 +337,8 @@
                     <h2>Add Paper (PDF + AI)</h2>
                     <div class="drag-area" onclick="document.getElementById('pdfInput').click()">
                         <h3>Click to Upload PDF</h3>
-                        <p style="font-size:0.85em; color:#777;">I'll extract title, date, and summary automatically.</p>
+                        <p style="font-size:0.85em; color:#777;">I'll extract title, date, and summary automatically.
+                        </p>
                         <input type="file" id="pdfInput" accept=".pdf" hidden onchange="handlePdfUpload(this)">
                     </div>
                     <div id="aiStatus" class="loading-text"></div>
@@ -137,13 +365,17 @@
             <div id="tab-blog" class="tab-content">
                 <div class="card">
                     <h2>Write New Blog Post</h2>
-                    <div class="form-group"><label>Title</label><input type="text" id="b_title" placeholder="Post Title"></div>
+                    <div class="form-group"><label>Title</label><input type="text" id="b_title"
+                            placeholder="Post Title"></div>
                     <div class="row form-group">
-                        <div class="col"><label>Type (Tag)</label><input type="text" id="b_type" placeholder="e.g. Research, Dev Log"></div>
+                        <div class="col"><label>Type (Tag)</label><input type="text" id="b_type"
+                                placeholder="e.g. Research, Dev Log"></div>
                         <div class="col"><label>Date (Optional)</label><input type="date" id="b_date"></div>
                     </div>
-                    <div class="form-group"><label>Image URL (Optional)</label><input type="text" id="b_image" placeholder="https://..."></div>
-                    <div class="form-group"><label>Content</label><textarea id="b_content" style="height: 300px; font-family: monospace;" placeholder="# Heading..."></textarea></div>
+                    <div class="form-group"><label>Image URL (Optional)</label><input type="text" id="b_image"
+                            placeholder="https://..."></div>
+                    <div class="form-group"><label>Content</label><textarea id="b_content"
+                            style="height: 300px; font-family: monospace;" placeholder="# Heading..."></textarea></div>
                     <button class="btn btn-primary" onclick="saveBlogPost()">Publish Blog Post</button>
                 </div>
             </div>
@@ -152,8 +384,15 @@
                 <div class="card">
                     <h2>Create New Note</h2>
                     <div class="form-group"><label>Note Title</label><input type="text" id="n_title"></div>
-                    <div class="form-group"><label>Tags</label><input type="text" id="n_tags" placeholder="e.g. AI, CUDA"></div>
-                    <div class="form-group"><label>Content</label><textarea id="n_content" style="height: 200px;"></textarea></div>
+                    <div class="form-group"><label>Tags</label><input type="text" id="n_tags"
+                            placeholder="e.g. AI, CUDA"></div>
+                    <div class="drag-area" onclick="document.getElementById('n_image').click()"
+                        style="padding: 15px; margin-bottom: 10px;">
+                        <span style="font-size:0.9em; font-weight:600; color:#555;">📸 Insert Image to Note</span>
+                        <input type="file" id="n_image" accept="image/*" hidden onchange="handleNoteImageUpload(this)">
+                    </div>
+                    <div class="form-group"><label>Content</label><textarea id="n_content"
+                            style="height: 200px;"></textarea></div>
                     <button class="btn btn-primary" onclick="createNote()">Post Note</button>
                 </div>
                 <div class="card">
@@ -201,7 +440,7 @@
         function toggleUI(isLoggedIn) {
             document.getElementById('authScreen').style.display = isLoggedIn ? 'none' : 'flex';
             document.getElementById('adminPanel').style.display = isLoggedIn ? 'block' : 'none';
-            if(isLoggedIn) {
+            if (isLoggedIn) {
                 loadNotesList();
                 document.getElementById('p_date_read').valueAsDate = new Date();
                 document.getElementById('b_date').valueAsDate = new Date();
@@ -215,8 +454,8 @@
             document.getElementById('tab-' + tabName).classList.add('active');
             const btns = document.querySelectorAll('.tab-btn');
             // Simple mapping
-            const mapping = {'papers':0, 'blog':1, 'notes':2, 'profile':3};
-            if(mapping[tabName] !== undefined) btns[mapping[tabName]].classList.add('active');
+            const mapping = { 'papers': 0, 'blog': 1, 'notes': 2, 'profile': 3 };
+            if (mapping[tabName] !== undefined) btns[mapping[tabName]].classList.add('active');
         }
 
         function saveKey() { localStorage.setItem('openai_key', document.getElementById('apiKey').value); alert('Key saved!'); }
@@ -224,16 +463,16 @@
         // --- CV UPLOAD LOGIC ---
         async function uploadCV() {
             const file = document.getElementById('cvFile').files[0];
-            if(!file) return;
-            
+            if (!file) return;
+
             document.getElementById('cvStatus').innerText = "Uploading...";
-            
+
             // Upload to 'Portfolio' bucket as 'cv.pdf'
             const { data, error } = await client.storage
                 .from('Portfolio')
                 .upload('cv.pdf', file, { upsert: true });
 
-            if(error) {
+            if (error) {
                 document.getElementById('cvStatus').innerText = "Error: " + error.message;
                 document.getElementById('cvStatus').style.color = "red";
             } else {
@@ -243,21 +482,51 @@
         }
 
         // --- NOTES LOGIC ---
+        async function handleNoteImageUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const contentArea = document.getElementById('n_content');
+            const originalText = contentArea.value;
+            contentArea.value += `\n[Uploading ${file.name}...]`;
+
+            // Simple unique file name
+            const fileName = `notes/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+
+            const { data, error } = await client.storage
+                .from('Portfolio')
+                .upload(fileName, file, { upsert: true });
+
+            if (error) {
+                alert("Upload failed: " + error.message);
+                contentArea.value = originalText; // Revert
+                return;
+            }
+
+            // Get Public URL
+            const { data: { publicUrl } } = client.storage
+                .from('Portfolio')
+                .getPublicUrl(fileName);
+
+            // Replace loading text with markdown image
+            contentArea.value = contentArea.value.replace(`\n[Uploading ${file.name}...]`, `\n![Image](${publicUrl})\n`);
+        }
+
         async function createNote() {
             const title = document.getElementById('n_title').value;
             const content = document.getElementById('n_content').value;
             const tagsRaw = document.getElementById('n_tags').value;
-            if(!title || !content) return alert("Title and content required");
+            if (!title || !content) return alert("Title and content required");
             const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()) : [];
             const { error } = await client.from('notes').insert([{ title, content, tags }]);
             if (error) alert('Error: ' + error.message);
-            else { alert('Note Created!'); document.getElementById('n_title').value=''; document.getElementById('n_content').value=''; loadNotesList(); }
+            else { alert('Note Created!'); document.getElementById('n_title').value = ''; document.getElementById('n_content').value = ''; loadNotesList(); }
         }
 
         async function loadNotesList() {
             const { data, error } = await client.from('notes').select('id, title, created_at').order('created_at', { ascending: false });
             const list = document.getElementById('notesList');
-            if(error || !data) { list.innerHTML = "Error loading notes."; return; }
+            if (error || !data) { list.innerHTML = "Error loading notes."; return; }
             list.innerHTML = data.map(n => `
                 <div class="note-item">
                     <div><strong>${n.title}</strong> <span style="color:#888; font-size:0.9em;">${new Date(n.created_at).toLocaleDateString()}</span></div>
@@ -267,35 +536,35 @@
         }
 
         async function deleteNote(id) {
-            if(!confirm("Delete this note?")) return;
+            if (!confirm("Delete this note?")) return;
             const { error } = await client.from('notes').delete().eq('id', id);
-            if(error) alert(error.message); else loadNotesList();
+            if (error) alert(error.message); else loadNotesList();
         }
 
         // --- BLOG & PAPER LOGIC (Preserved) ---
         async function saveBlogPost() {
             const title = document.getElementById('b_title').value;
             const content = document.getElementById('b_content').value;
-            if(!title || !content) return alert("Title/Content required.");
+            if (!title || !content) return alert("Title/Content required.");
             const post = { title, content, type: document.getElementById('b_type').value, image: document.getElementById('b_image').value, created_at: document.getElementById('b_date').value ? new Date(document.getElementById('b_date').value).toISOString() : new Date().toISOString() };
             const { error } = await client.from('posts').insert([post]);
-            if(error) alert("Error: " + error.message); else { alert("Post Published!"); document.getElementById('b_title').value=''; document.getElementById('b_content').value=''; }
+            if (error) alert("Error: " + error.message); else { alert("Post Published!"); document.getElementById('b_title').value = ''; document.getElementById('b_content').value = ''; }
         }
 
         async function getEmbedding(text) {
             const apiKey = localStorage.getItem('openai_key');
-            if(!apiKey) return null;
+            if (!apiKey) return null;
             try {
                 const res = await fetch('https://api.openai.com/v1/embeddings', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, body: JSON.stringify({ model: "text-embedding-3-small", input: text.substring(0, 8000) }) });
                 const data = await res.json(); return data.data[0].embedding;
-            } catch(e) { console.error(e); return null; }
+            } catch (e) { console.error(e); return null; }
         }
 
         async function handlePdfUpload(input) {
             const file = input.files[0];
             if (!file) return;
             const apiKey = localStorage.getItem('openai_key');
-            if(!apiKey) return alert("Please set OpenAI API Key first.");
+            if (!apiKey) return alert("Please set OpenAI API Key first.");
             document.getElementById('aiStatus').textContent = "Reading PDF...";
             try {
                 const arrayBuffer = await file.arrayBuffer();
@@ -307,14 +576,14 @@
                     text += content.items.map(item => item.str).join(' ') + "\n";
                 }
                 document.getElementById('aiStatus').textContent = "AI Analysis...";
-                const res = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, body: JSON.stringify({ model: "gpt-3.5-turbo", messages: [{role: "user", content: `Analyze paper. JSON only: { "title": "", "conference": "", "date_published": "YYYY-MM-DD", "topic": "2-3 words", "summary": "1 sentence" }. Text: ${text.substring(0, 3000)}`}], temperature: 0 }) });
+                const res = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, body: JSON.stringify({ model: "gpt-3.5-turbo", messages: [{ role: "user", content: `Analyze paper. JSON only: { "title": "", "conference": "", "date_published": "YYYY-MM-DD", "topic": "2-3 words", "summary": "1 sentence" }. Text: ${text.substring(0, 3000)}` }], temperature: 0 }) });
                 const data = await res.json();
                 const result = JSON.parse(data.choices[0].message.content);
                 document.getElementById('p_title').value = result.title || "";
                 document.getElementById('p_conf').value = result.conference || "";
                 document.getElementById('p_topic').value = result.topic || "";
                 document.getElementById('p_summary').value = result.summary || "";
-                if(result.date_published) document.getElementById('p_date_pub').value = result.date_published;
+                if (result.date_published) document.getElementById('p_date_pub').value = result.date_published;
                 document.getElementById('aiStatus').textContent = "Done! Click Save.";
             } catch (e) { document.getElementById('aiStatus').textContent = "Error: " + e.message; }
         }
@@ -325,7 +594,7 @@
             const embedding = await getEmbedding(document.getElementById('p_title').value + ": " + summary);
             const paper = { title: document.getElementById('p_title').value, conference: document.getElementById('p_conf').value, date_published: document.getElementById('p_date_pub').value || null, date_read: document.getElementById('p_date_read').value || new Date().toISOString(), topic: document.getElementById('p_topic').value, link: document.getElementById('p_link').value, summary, embedding };
             const { error } = await client.from('papers').insert([paper]);
-            if(error) alert("Error: " + error.message); else { alert("Paper Saved!"); document.getElementById('aiStatus').textContent = ""; document.querySelectorAll('#tab-papers input:not(#apiKey), #tab-papers textarea').forEach(i => i.value = ''); }
+            if (error) alert("Error: " + error.message); else { alert("Paper Saved!"); document.getElementById('aiStatus').textContent = ""; document.querySelectorAll('#tab-papers input:not(#apiKey), #tab-papers textarea').forEach(i => i.value = ''); }
         }
 
         async function handleCsvUpload(input) {
@@ -337,9 +606,9 @@
                 document.getElementById('csvStatus').textContent = `Importing ${lines.length} lines...`;
                 const parseLine = (line) => { const res = []; let curr = ''; let inQuote = false; for (let char of line) { if (char === '"') inQuote = !inQuote; else if (char === ',' && !inQuote) { res.push(curr); curr = ''; } else curr += char; } res.push(curr); return res; };
                 const startIdx = lines[0].toLowerCase().includes('title') ? 1 : 0;
-                for(let i = startIdx; i < lines.length; i++) {
+                for (let i = startIdx; i < lines.length; i++) {
                     const cols = parseLine(lines[i]);
-                    if(cols.length < 5) continue;
+                    if (cols.length < 5) continue;
                     await client.from('papers').insert([{ title: cols[0].replace(/^"|"$/g, '').trim(), date_published: cols[1] ? new Date(cols[1]).toISOString() : null, date_read: cols[2] ? new Date(cols[2]).toISOString() : null, topic: cols[3].replace(/^"|"$/g, '').trim(), conference: cols[4].replace(/^"|"$/g, '').trim(), link: cols[5].replace(/^"|"$/g, '').trim(), summary: cols[7] ? cols[7].replace(/^"|"$/g, '').trim() : '' }]);
                 }
                 document.getElementById('csvStatus').textContent = "CSV Import Done!";
@@ -348,4 +617,5 @@
         }
     </script>
 </body>
+
 </html>
