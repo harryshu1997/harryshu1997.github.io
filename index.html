@@ -23,6 +23,26 @@
             --border-color: #e2e8f0;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
             --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+            /* Seasonal hero background (defaults to winter) */
+            --hero-bg-image: url('images/background.jpg');
+            --hero-overlay-gradient: linear-gradient(135deg, rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.7));
+        }
+
+        html[data-season="spring"] {
+            --hero-overlay-gradient: linear-gradient(135deg, rgba(44, 62, 80, 0.55), rgba(44, 62, 80, 0.35));
+        }
+
+        html[data-season="summer"] {
+            --hero-overlay-gradient: linear-gradient(135deg, rgba(44, 62, 80, 0.45), rgba(44, 62, 80, 0.25));
+        }
+
+        html[data-season="autumn"] {
+            --hero-overlay-gradient: linear-gradient(135deg, rgba(44, 62, 80, 0.70), rgba(44, 62, 80, 0.45));
+        }
+
+        html[data-season="winter"] {
+            --hero-overlay-gradient: linear-gradient(135deg, rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.7));
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -76,7 +96,7 @@
         /* Hero Section */
         .header {
             width: 100%; height: 60vh; min-height: 450px;
-            background-image: url('images/background.jpg'); 
+            background-image: var(--hero-bg-image);
             background-size: cover; background-position: center; background-attachment: fixed;
             display: flex; align-items: center; justify-content: center;
             position: relative; margin-top: 60px;
@@ -84,7 +104,7 @@
         
         .header::before {
             content: ''; position: absolute; inset: 0;
-            background: linear-gradient(135deg, rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.7));
+            background: var(--hero-overlay-gradient);
             z-index: 1;
         }
         
@@ -105,6 +125,122 @@
         .profile-photo img { width: 100%; height: 100%; object-fit: cover; }
         
         .header-info h1 { font-size: 3em; color: white; margin-bottom: 5px; line-height: 1.1; }
+
+        .name-animated {
+            display: inline-block;
+            position: relative;
+            letter-spacing: -0.5px;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            background-image: linear-gradient(
+                90deg,
+                #ff4d4d,
+                #ffcc00,
+                #2ecc71,
+                #3498db,
+                #9b59b6,
+                #ff4d4d
+            );
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: nameFloat 3.2s ease-in-out infinite, gradientShift 5.5s ease-in-out infinite;
+        }
+
+        .name-animated::after {
+            content: '';
+            position: absolute;
+            left: -10%;
+            top: 0;
+            width: 120%;
+            height: 100%;
+            background: linear-gradient(
+                110deg,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,0.0) 35%,
+                rgba(255,255,255,0.35) 45%,
+                rgba(255,255,255,0.0) 55%,
+                rgba(255,255,255,0) 100%
+            );
+            transform: skewX(-18deg) translateX(-130%);
+            animation: nameShine 3.6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .name-animated .holiday-accent {
+            color: rgba(255,255,255,0.92);
+            text-decoration: none;
+            position: relative;
+        }
+
+        @keyframes nameFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        @keyframes nameShine {
+            0%, 55% { transform: skewX(-18deg) translateX(-130%); opacity: 0; }
+            65% { opacity: 1; }
+            80% { transform: skewX(-18deg) translateX(130%); opacity: 0; }
+            100% { transform: skewX(-18deg) translateX(130%); opacity: 0; }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Snow canvas overlay (Christmas effect) */
+        #snowCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.55;
+            display: none;
+        }
+
+        /* Seasonal effects canvas (spring/summer/autumn) */
+        #seasonCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.45;
+            display: none;
+        }
+
+        html[data-season="winter"] #snowCanvas {
+            display: block;
+        }
+
+        html[data-season="spring"] #seasonCanvas,
+        html[data-season="summer"] #seasonCanvas,
+        html[data-season="autumn"] #seasonCanvas {
+            display: block;
+        }
+
+        html[data-season="summer"] #seasonCanvas {
+            opacity: 0.35;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .name-animated,
+            .name-animated::after {
+                animation: none !important;
+            }
+            #snowCanvas {
+                display: none;
+            }
+            #seasonCanvas {
+                display: none;
+            }
+        }
         
         .affiliation {
             font-size: 1.4em; color: rgba(255, 255, 255, 0.9);
@@ -197,6 +333,32 @@
 </head>
 <body>
 
+    <canvas id="snowCanvas" aria-hidden="true"></canvas>
+    <canvas id="seasonCanvas" aria-hidden="true"></canvas>
+
+    <script>
+        (function () {
+            const month = new Date().getMonth() + 1;
+            const root = document.documentElement;
+
+            const params = new URLSearchParams(window.location.search);
+            const forced = (params.get('season') || '').toLowerCase();
+            const allowed = new Set(['winter', 'spring', 'summer', 'autumn']);
+
+            /** @type {'winter'|'spring'|'summer'|'autumn'} */
+            let season = 'winter';
+            if (month >= 3 && month <= 5) season = 'spring';
+            else if (month >= 6 && month <= 8) season = 'summer';
+            else if (month >= 9 && month <= 11) season = 'autumn';
+
+            if (allowed.has(forced)) {
+                season = /** @type {'winter'|'spring'|'summer'|'autumn'} */ (forced);
+            }
+
+            root.dataset.season = season;
+        })();
+    </script>
+
     <nav class="nav-header" id="navbar">
         <div class="nav-title">Zhihao Shu</div>
         <div class="nav-links">
@@ -215,7 +377,7 @@
                 <img src="images/profile.jpg" alt="Zhihao Shu">
             </div>
             <div class="header-info">
-                <h1>Zhihao Shu</h1>
+                <h1><span class="name-animated">Zhihao Shu <span id="seasonIcon" class="holiday-accent" role="img" aria-label="winter">❄</span></span></h1>
                 <div class="affiliation">Ph.D. Student @ University of Georgia</div>
                 <div class="contact-links">
                     <span><ion-icon name="mail-outline" style="vertical-align: middle;"></ion-icon> Zhihao.Shu@uga.edu</span>
@@ -326,6 +488,322 @@
             </ul>
         </div>
     </div>
+
+    <script>
+        (function () {
+            const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (prefersReducedMotion) return;
+
+            const season = document.documentElement.dataset.season;
+            if (season && season !== 'winter') return;
+
+            const canvas = document.getElementById('snowCanvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d', { alpha: true });
+            if (!ctx) return;
+
+            let width = 0;
+            let height = 0;
+            let dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+
+            const flakes = [];
+            const maxFlakes = 140;
+
+            function resize() {
+                width = Math.max(1, window.innerWidth);
+                height = Math.max(1, window.innerHeight);
+                dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+                canvas.width = Math.floor(width * dpr);
+                canvas.height = Math.floor(height * dpr);
+                canvas.style.width = width + 'px';
+                canvas.style.height = height + 'px';
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+
+            function rand(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            function createFlake(initial = false) {
+                const size = rand(1.2, 3.8);
+                return {
+                    x: rand(0, width),
+                    y: initial ? rand(0, height) : rand(-20, -2),
+                    r: size,
+                    vy: rand(0.6, 2.2) * (4.2 / size),
+                    vx: rand(-0.6, 0.6),
+                    phase: rand(0, Math.PI * 2),
+                    drift: rand(0.6, 1.6)
+                };
+            }
+
+            function ensureFlakes() {
+                const target = Math.min(maxFlakes, Math.floor(width / 8));
+                while (flakes.length < target) flakes.push(createFlake(true));
+                while (flakes.length > target) flakes.pop();
+            }
+
+            let last = performance.now();
+            function tick(now) {
+                const dt = Math.min(0.05, (now - last) / 1000);
+                last = now;
+
+                ctx.clearRect(0, 0, width, height);
+                ctx.fillStyle = 'rgba(255,255,255,0.9)';
+
+                for (let i = 0; i < flakes.length; i++) {
+                    const f = flakes[i];
+                    f.phase += dt * 1.6;
+                    f.x += (f.vx + Math.sin(f.phase) * 0.55 * f.drift) * 60 * dt;
+                    f.y += f.vy * 60 * dt;
+
+                    if (f.x < -30) f.x = width + 30;
+                    if (f.x > width + 30) f.x = -30;
+
+                    if (f.y > height + 10) {
+                        flakes[i] = createFlake(false);
+                        continue;
+                    }
+
+                    ctx.beginPath();
+                    ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                requestAnimationFrame(tick);
+            }
+
+            resize();
+            ensureFlakes();
+            window.addEventListener('resize', () => {
+                resize();
+                ensureFlakes();
+            }, { passive: true });
+
+            requestAnimationFrame(tick);
+        })();
+    </script>
+
+    <script>
+        (function () {
+            const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (prefersReducedMotion) return;
+
+            const season = document.documentElement.dataset.season;
+            if (!season || season === 'winter') return;
+
+            const canvas = document.getElementById('seasonCanvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d', { alpha: true });
+            if (!ctx) return;
+
+            const styles = getComputedStyle(document.documentElement);
+            const accent = (styles.getPropertyValue('--accent') || '#c0392b').trim();
+            const accentHover = (styles.getPropertyValue('--accent-hover') || '#e74c3c').trim();
+
+            let width = 0;
+            let height = 0;
+            let dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+
+            /** @type {Array<any>} */
+            const particles = [];
+
+            function rand(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+
+                        const iconBySeason = {
+                            winter: '❄',
+                            spring: '🌸',
+                            summer: '☀',
+                            autumn: '🍂'
+                        };
+
+                        function applySeasonIcon() {
+                            const el = document.getElementById('seasonIcon');
+                            if (!el) return;
+                            const icon = iconBySeason[season] || '❄';
+                            el.textContent = icon;
+                            el.setAttribute('aria-label', season);
+                        }
+
+                        if (document.readyState === 'loading') {
+                            document.addEventListener('DOMContentLoaded', applySeasonIcon, { once: true });
+                        } else {
+                            applySeasonIcon();
+                        }
+            function resize() {
+                width = Math.max(1, window.innerWidth);
+                height = Math.max(1, window.innerHeight);
+                dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+                canvas.width = Math.floor(width * dpr);
+                canvas.height = Math.floor(height * dpr);
+                canvas.style.width = width + 'px';
+                canvas.style.height = height + 'px';
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+
+            function createParticle(initial = false) {
+                if (season === 'summer') {
+                    const r = rand(1.2, 2.8);
+                    return {
+                        kind: 'glow',
+                        x: rand(0, width),
+                        y: rand(0, height),
+                        r,
+                        vx: rand(-0.12, 0.12),
+                        vy: rand(-0.08, 0.08),
+                        a: rand(0.12, 0.35),
+                        phase: rand(0, Math.PI * 2),
+                        pulse: rand(0.6, 1.2),
+                    };
+                }
+
+                const size = season === 'spring' ? rand(6, 12) : rand(7, 14);
+                const isSpring = season === 'spring';
+
+                return {
+                    kind: isSpring ? 'petal' : 'leaf',
+                    x: rand(0, width),
+                    y: initial ? rand(0, height) : rand(-30, -5),
+                    size,
+                    vy: rand(0.45, 1.25) * (12 / size),
+                    vx: rand(-0.35, 0.35),
+                    rot: rand(0, Math.PI * 2),
+                    vr: rand(-0.015, 0.015),
+                    phase: rand(0, Math.PI * 2),
+                    drift: rand(0.8, 1.6),
+                };
+            }
+
+            function ensureParticles() {
+                const target = season === 'summer'
+                    ? Math.min(95, Math.floor(width / 14))
+                    : Math.min(75, Math.floor(width / 16));
+                while (particles.length < target) particles.push(createParticle(true));
+                while (particles.length > target) particles.pop();
+            }
+
+            function drawPetal(p) {
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rot);
+
+                ctx.fillStyle = `rgba(255,255,255,0.34)`;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, p.size * 0.42, p.size * 0.22, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = `rgba(255,255,255,0.20)`;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(-p.size * 0.25, 0);
+                ctx.quadraticCurveTo(0, -p.size * 0.08, p.size * 0.25, 0);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            function drawLeaf(p) {
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rot);
+
+                ctx.fillStyle = `rgba(255,255,255,0.12)`;
+                ctx.strokeStyle = `rgba(255,255,255,0.10)`;
+                ctx.lineWidth = 1;
+
+                ctx.beginPath();
+                ctx.moveTo(0, -p.size * 0.55);
+                ctx.quadraticCurveTo(p.size * 0.55, -p.size * 0.10, 0, p.size * 0.65);
+                ctx.quadraticCurveTo(-p.size * 0.55, -p.size * 0.10, 0, -p.size * 0.55);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.strokeStyle = `rgba(255,255,255,0.16)`;
+                ctx.beginPath();
+                ctx.moveTo(0, -p.size * 0.48);
+                ctx.lineTo(0, p.size * 0.55);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            function drawGlow(p) {
+                const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 10);
+                glow.addColorStop(0, `rgba(255,255,255,${p.a})`);
+                glow.addColorStop(1, 'rgba(255,255,255,0)');
+                ctx.fillStyle = glow;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r * 10, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = `rgba(255,255,255,${Math.min(0.9, p.a * 2.2)})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            let last = performance.now();
+            function tick(now) {
+                const dt = Math.min(0.05, (now - last) / 1000);
+                last = now;
+
+                ctx.clearRect(0, 0, width, height);
+
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+
+                    if (p.kind === 'glow') {
+                        p.phase += dt * p.pulse;
+                        const pulse = 0.65 + 0.35 * (0.5 + 0.5 * Math.sin(p.phase * 2.0));
+                        p.x += p.vx * 60 * dt;
+                        p.y += p.vy * 60 * dt;
+                        p.a = Math.max(0.06, Math.min(0.38, p.a * 0.98 + 0.02 * pulse));
+
+                        if (p.x < -30) p.x = width + 30;
+                        if (p.x > width + 30) p.x = -30;
+                        if (p.y < -30) p.y = height + 30;
+                        if (p.y > height + 30) p.y = -30;
+
+                        drawGlow(p);
+                        continue;
+                    }
+
+                    p.phase += dt * 1.4;
+                    p.rot += p.vr * 60 * dt;
+                    p.x += (p.vx + Math.sin(p.phase) * 0.45 * p.drift) * 60 * dt;
+                    p.y += p.vy * 60 * dt;
+
+                    if (p.x < -40) p.x = width + 40;
+                    if (p.x > width + 40) p.x = -40;
+
+                    if (p.y > height + 20) {
+                        particles[i] = createParticle(false);
+                        continue;
+                    }
+
+                    if (p.kind === 'petal') drawPetal(p);
+                    else drawLeaf(p);
+                }
+
+                requestAnimationFrame(tick);
+            }
+
+            resize();
+            ensureParticles();
+            window.addEventListener('resize', () => {
+                resize();
+                ensureParticles();
+            }, { passive: true });
+
+            requestAnimationFrame(tick);
+        })();
+    </script>
     
     <div class="footer">
         &copy; <script>document.write(new Date().getFullYear())</script> Zhihao Shu. <br>
