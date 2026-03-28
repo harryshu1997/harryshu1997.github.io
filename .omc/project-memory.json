@@ -1,0 +1,130 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1774722285669,
+  "projectRoot": "/Users/zhihaoshu/Desktop/Personal_Website",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "pages"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "images": {
+      "path": "images",
+      "purpose": null,
+      "fileCount": 7,
+      "lastAccessed": 1774722285657,
+      "keyFiles": [
+        "README.md",
+        "WechatIMG168.jpg",
+        "background.jpg",
+        "favicon.svg",
+        "profile.jpg"
+      ]
+    },
+    "pages": {
+      "path": "pages",
+      "purpose": "Page components",
+      "fileCount": 7,
+      "lastAccessed": 1774722285658,
+      "keyFiles": [
+        "admin.html",
+        "blog.html",
+        "faq.html",
+        "notes.html",
+        "paper-detail.html"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "pages/daily-papers.html",
+      "accessCount": 24,
+      "lastAccessed": 1774724703369,
+      "type": "file"
+    },
+    {
+      "path": "pages/papers.html",
+      "accessCount": 6,
+      "lastAccessed": 1774723215120,
+      "type": "file"
+    },
+    {
+      "path": "index.html",
+      "accessCount": 5,
+      "lastAccessed": 1774723220516,
+      "type": "file"
+    },
+    {
+      "path": "pages/blog.html",
+      "accessCount": 4,
+      "lastAccessed": 1774723124613,
+      "type": "file"
+    },
+    {
+      "path": "pages/notes.html",
+      "accessCount": 3,
+      "lastAccessed": 1774723126884,
+      "type": "file"
+    },
+    {
+      "path": "pages/admin.html",
+      "accessCount": 3,
+      "lastAccessed": 1774723128015,
+      "type": "file"
+    },
+    {
+      "path": "pages/teaching.html",
+      "accessCount": 3,
+      "lastAccessed": 1774723129161,
+      "type": "file"
+    },
+    {
+      "path": "pages/faq.html",
+      "accessCount": 3,
+      "lastAccessed": 1774723130265,
+      "type": "file"
+    },
+    {
+      "path": "pages/paper-detail.html",
+      "accessCount": 3,
+      "lastAccessed": 1774723138760,
+      "type": "directory"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 1,
+      "lastAccessed": 1774722910980,
+      "type": "file"
+    },
+    {
+      "path": "deploy.sh",
+      "accessCount": 1,
+      "lastAccessed": 1774722913380,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

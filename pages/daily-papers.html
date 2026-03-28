@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Papers - Zhihao Shu</title>
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #c0392b;
+            --accent-hover: #e74c3c;
+            --bg-color: #faf9f6;
+            --card-bg: #ffffff;
+            --text-color: #4a5568;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --shadow-hover: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Nav ── */
+        .nav-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 15px 50px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex; justify-content: space-between; align-items: center;
+            transition: all 0.3s ease;
+        }
+        .nav-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700; font-size: 1.5em;
+            color: var(--primary); text-decoration: none;
+        }
+        .nav-links a {
+            text-decoration: none; color: var(--primary);
+            margin-left: 25px; opacity: 0.7;
+            transition: opacity 0.2s, color 0.2s;
+            font-weight: 500; font-size: 0.95em;
+        }
+        .nav-links a:hover, .nav-links a.current { opacity: 1; color: var(--accent); }
+
+        /* ── Layout ── */
+        .container { max-width: 900px; margin: 0 auto 60px; padding: 0 20px; }
+
+        /* ── Page Hero Header ── */
+        .page-hero {
+            background: linear-gradient(135deg, var(--primary) 0%, #3d5166 60%, #4a6080 100%);
+            padding: 80px 20px 50px;
+            margin-top: 59px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .page-hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .page-hero::after {
+            content: '';
+            position: absolute; bottom: 0; left: 0; right: 0;
+            height: 40px;
+            background: linear-gradient(to bottom right, transparent 49%, var(--bg-color) 50%);
+        }
+        .page-hero-content {
+            position: relative; z-index: 1;
+            max-width: 700px; margin: 0 auto;
+        }
+        .page-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8em; color: #fff;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .page-hero p {
+            color: rgba(255,255,255,0.78);
+            font-size: 1.08em;
+            margin-bottom: 18px;
+        }
+        .last-updated {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(6px);
+            color: rgba(255,255,255,0.85);
+            font-size: 0.82em; font-weight: 500;
+            padding: 5px 14px;
+            border-radius: 999px;
+        }
+        .last-updated ion-icon { font-size: 0.95em; opacity: 0.8; }
+
+        /* ── Body container offset ── */
+        .body-container { padding-top: 30px; }
+
+        /* ── Preferences Panel ── */
+        .preferences-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 28px 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 28px;
+        }
+        .panel-header {
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 6px;
+        }
+        .panel-header ion-icon {
+            font-size: 1.15em; color: var(--accent); flex-shrink: 0;
+        }
+        .preferences-panel h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15em; color: var(--primary);
+        }
+        .panel-hint {
+            font-size: 0.82em; color: #a0aec0; margin-bottom: 16px;
+        }
+
+        /* ── Ranked topic list ── */
+        .topic-list { list-style: none; margin-bottom: 18px; }
+        .topic-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 14px;
+            background: var(--bg-color);
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 7px;
+            transition: border-color 0.18s, box-shadow 0.18s, background 0.15s;
+            cursor: grab;
+        }
+        .topic-item:active { cursor: grabbing; }
+        .topic-item.dragging {
+            opacity: 0.5;
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(192,57,43,0.15);
+        }
+        .topic-item.drag-over {
+            border-color: var(--accent);
+            background: rgba(192,57,43,0.04);
+        }
+        .topic-rank {
+            display: flex; align-items: center; justify-content: center;
+            width: 24px; height: 24px;
+            border-radius: 6px;
+            background: var(--accent);
+            color: #fff;
+            font-size: 0.76em; font-weight: 700;
+            flex-shrink: 0;
+        }
+        .topic-icon { font-size: 1.05em; color: var(--accent); flex-shrink: 0; opacity: 0.7; }
+        .topic-label {
+            flex: 1;
+            font-size: 0.88em; font-weight: 500;
+            color: var(--primary);
+        }
+        .topic-actions { display: flex; gap: 2px; flex-shrink: 0; }
+        .topic-btn {
+            display: flex; align-items: center; justify-content: center;
+            width: 28px; height: 28px;
+            border: none; background: transparent;
+            color: #a0aec0; border-radius: 6px;
+            cursor: pointer; transition: background 0.15s, color 0.15s;
+            font-size: 0.9em;
+        }
+        .topic-btn:hover { background: rgba(0,0,0,0.06); color: var(--primary); }
+        .topic-btn.remove:hover { background: rgba(192,57,43,0.1); color: var(--accent); }
+        .topic-btn:focus-visible {
+            outline: 2px solid rgba(192,57,43,0.4);
+            outline-offset: 1px;
+        }
+        .drag-handle { color: #cbd5e0; cursor: grab; flex-shrink: 0; font-size: 1.1em; }
+
+        /* ── Add custom topic ── */
+        .add-topic-row {
+            display: flex; gap: 8px;
+            margin-bottom: 20px;
+        }
+        .add-topic-input {
+            flex: 1;
+            padding: 9px 14px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.88em;
+            color: var(--primary);
+            background: var(--bg-color);
+            outline: none;
+            transition: border-color 0.18s, box-shadow 0.18s;
+        }
+        .add-topic-input::placeholder { color: #a0aec0; }
+        .add-topic-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(192,57,43,0.1);
+        }
+        .btn-add {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 9px 18px;
+            background: var(--primary); color: #fff;
+            border: none; border-radius: 8px;
+            font-family: 'Inter', sans-serif; font-size: 0.86em; font-weight: 600;
+            cursor: pointer; transition: background 0.18s, transform 0.15s;
+            white-space: nowrap;
+        }
+        .btn-add:hover { background: #3d5166; transform: translateY(-1px); }
+        .btn-add:focus-visible {
+            outline: 3px solid rgba(44,62,80,0.4);
+            outline-offset: 2px;
+        }
+        .btn-add ion-icon { font-size: 1em; }
+
+        .panel-footer { display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
+        .papers-count {
+            font-size: 0.83em; color: #718096;
+        }
+        .btn-refresh {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 9px 22px;
+            background: var(--accent); color: #fff;
+            border: none; border-radius: 8px;
+            font-family: 'Inter', sans-serif; font-size: 0.88em; font-weight: 600;
+            cursor: pointer;
+            transition: background 0.18s, transform 0.15s, box-shadow 0.18s;
+        }
+        .btn-refresh:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(192,57,43,0.3);
+        }
+        .btn-refresh:active { transform: translateY(0); box-shadow: none; }
+        .btn-refresh:focus-visible {
+            outline: 3px solid rgba(192,57,43,0.4);
+            outline-offset: 2px;
+        }
+        .btn-refresh ion-icon { font-size: 1.05em; }
+        .btn-refresh.spinning ion-icon { animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Papers Grid ── */
+        .papers-grid { display: flex; flex-direction: column; gap: 16px; }
+
+        /* ── Paper Card ── */
+        .paper-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 24px 28px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            opacity: 0;
+            animation: fadeInUp 0.35s ease forwards;
+            position: relative;
+        }
+        .paper-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+            border-color: rgba(192,57,43,0.25);
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 8px; }
+        .topic-badge {
+            flex-shrink: 0;
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background: rgba(192,57,43,0.09);
+            color: var(--accent);
+            font-size: 0.76em; font-weight: 600;
+            white-space: nowrap;
+            border: 1px solid rgba(192,57,43,0.15);
+        }
+        .paper-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1em; font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            line-height: 1.4;
+            flex: 1;
+            transition: color 0.18s;
+        }
+        .paper-title:hover { color: var(--accent); }
+
+        .paper-authors {
+            font-size: 0.84em; color: #718096;
+            margin-bottom: 10px;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .paper-authors ion-icon { font-size: 0.95em; opacity: 0.6; flex-shrink: 0; }
+        .paper-abstract {
+            font-size: 0.9em; color: var(--text-color);
+            margin-bottom: 14px; line-height: 1.7;
+            border-left: 3px solid var(--border-color);
+            padding-left: 12px;
+        }
+
+        .card-meta {
+            display: flex; align-items: center; gap: 20px;
+            font-size: 0.82em; color: #718096;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+        .meta-item { display: inline-flex; align-items: center; gap: 5px; }
+        .meta-item ion-icon { font-size: 1em; opacity: 0.7; }
+
+        /* ── Skeleton Loader ── */
+        .skeleton-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 24px 28px;
+            box-shadow: var(--shadow);
+        }
+        .skel {
+            background: linear-gradient(90deg, #edf0f3 25%, #f5f7f9 50%, #edf0f3 75%);
+            background-size: 400% 100%;
+            animation: shimmer 1.6s ease-in-out infinite;
+            border-radius: 6px;
+        }
+        @keyframes shimmer {
+            0%   { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+        .skel-title  { height: 20px; width: 78%; margin-bottom: 10px; border-radius: 4px; }
+        .skel-title-2 { height: 20px; width: 50%; margin-bottom: 14px; border-radius: 4px; }
+        .skel-author { height: 13px; width: 42%; margin-bottom: 14px; border-radius: 4px; }
+        .skel-line   { height: 12px; width: 100%; margin-bottom: 8px; border-radius: 4px; }
+        .skel-line.short { width: 65%; }
+        .skel-divider { height: 1px; background: var(--border-color); margin: 12px 0; }
+        .skel-meta   { height: 12px; width: 35%; border-radius: 4px; }
+
+        /* ── States ── */
+        .state-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 56px 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .state-box ion-icon { font-size: 2.8em; color: #cbd5e0; display: block; margin-bottom: 16px; }
+        .state-box p { color: #718096; font-size: 0.96em; margin-bottom: 20px; line-height: 1.6; }
+        .btn-retry {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 9px 22px;
+            background: transparent; color: var(--accent);
+            border: 1.5px solid var(--accent); border-radius: 8px;
+            font-family: 'Inter', sans-serif; font-size: 0.88em; font-weight: 600;
+            cursor: pointer; transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+        }
+        .btn-retry:hover {
+            background: var(--accent); color: #fff;
+            box-shadow: 0 4px 12px rgba(192,57,43,0.25);
+        }
+        .btn-retry:focus-visible {
+            outline: 3px solid rgba(192,57,43,0.4);
+            outline-offset: 2px;
+        }
+
+        /* ── Footer ── */
+        .site-footer {
+            text-align: center;
+            padding: 30px 20px 40px;
+            color: #a0aec0;
+            font-size: 0.83em;
+            border-top: 1px solid var(--border-color);
+            margin-top: 50px;
+        }
+        .site-footer a { color: #718096; text-decoration: none; }
+        .site-footer a:hover { color: var(--accent); }
+
+        /* ── Responsive ── */
+        @media (max-width: 600px) {
+            .nav-header { padding: 14px 20px; }
+            .nav-links { display: none; }
+            .page-hero { padding: 70px 20px 46px; }
+            .page-hero h1 { font-size: 2.1em; }
+            .body-container { padding-top: 24px; }
+            .preferences-panel { padding: 18px 18px; }
+            .chips-row { gap: 7px; }
+            .chip { font-size: 0.82em; padding: 6px 13px; }
+            .paper-card { padding: 18px 18px; }
+            .card-top { flex-direction: column-reverse; align-items: flex-start; gap: 8px; }
+            .card-meta { gap: 12px; flex-wrap: wrap; }
+        }
+        @media (max-width: 768px) {
+            .nav-header { padding: 14px 20px; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Nav -->
+    <nav class="nav-header">
+        <a href="../index.html" class="nav-title">Zhihao Shu</a>
+        <div class="nav-links">
+            <a href="../index.html">Home</a>
+            <a href="notes.html">Notes</a>
+            <a href="papers.html">Reading List</a>
+            <a href="daily-papers.html" class="current">Daily Papers</a>
+            <a href="blog.html">Blog</a>
+            <a href="teaching.html">Teaching</a>
+        </div>
+    </nav>
+
+    <!-- Page Hero -->
+    <div class="page-hero">
+        <div class="page-hero-content">
+            <h1>Daily Papers</h1>
+            <p>Discover trending research papers, refreshed daily</p>
+            <span class="last-updated" id="last-updated">
+                <ion-icon name="time-outline"></ion-icon>
+                <span id="last-updated-text">Loading...</span>
+            </span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="body-container">
+
+            <!-- Topic Preferences -->
+            <div class="preferences-panel">
+                <div class="panel-header">
+                    <ion-icon name="options-outline"></ion-icon>
+                    <h2>Research Interests</h2>
+                </div>
+                <p class="panel-hint">Drag to reorder — higher priority topics surface more papers</p>
+                <ul class="topic-list" id="topic-list">
+                    <!-- ranked topics rendered by JS -->
+                </ul>
+                <div class="add-topic-row">
+                    <input type="text" class="add-topic-input" id="add-topic-input"
+                           placeholder="Add custom topic, e.g. &quot;multi-device inference on the edge&quot;">
+                    <button class="btn-add" id="btn-add">
+                        <ion-icon name="add-outline"></ion-icon> Add
+                    </button>
+                </div>
+                <div class="panel-footer">
+                    <span class="papers-count" id="papers-count"></span>
+                    <button class="btn-refresh" id="btn-refresh">
+                        <ion-icon name="refresh-outline"></ion-icon>
+                        Refresh Papers
+                    </button>
+                </div>
+            </div>
+
+            <!-- Papers -->
+            <div class="papers-grid" id="papers-grid">
+                <!-- content rendered by JS -->
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>Papers sourced from <a href="https://openalex.org" target="_blank" rel="noopener">OpenAlex</a> &middot; <a href="../index.html">Zhihao Shu</a></p>
+    </footer>
+
+    <script>
+    (() => {
+        const STORAGE_TOPICS_KEY  = 'dailyPapersTopics';
+        const STORAGE_CACHE_KEY   = 'dailyPapersCache';
+        const DEFAULT_TOPICS = [
+            { label: 'AI',                     icon: 'sparkles-outline' },
+            { label: 'VR',                     icon: 'glasses-outline' },
+            { label: 'Edge Computing',         icon: 'hardware-chip-outline' },
+            { label: 'Multi-device Computing', icon: 'layers-outline' },
+        ];
+        const ICON_MAP = {
+            'AI': 'sparkles-outline',
+            'VR': 'glasses-outline',
+            'Edge Computing': 'hardware-chip-outline',
+            'Multi-device Computing': 'layers-outline',
+        };
+        const API_BASE = 'https://api.openalex.org/works';
+        const FIELDS   = 'id,title,authorships,abstract_inverted_index,cited_by_count,publication_year,publication_date,doi,primary_location';
+
+        // Top CS conferences + arXiv (OpenAlex source IDs)
+        const TOP_SOURCES = [
+            'S4306400194', // arXiv
+            'S4306420609', // NeurIPS
+            'S4306419644', // ICML
+            'S4306419637', // ICLR
+            'S4210191458', // AAAI
+            'S4306417705', // ASPLOS
+            'S4306420647', // OSDI
+            'S4306420747', // PLDI
+            'S4306420989', // SOSP
+            'S4306421123', // USENIX Security
+            'S4363607743', // CHI
+        ].join('|');
+
+        // ── State ──────────────────────────────────────────────────────────────
+        // Topics stored as ordered array of strings — index = priority (0 = highest)
+        let rankedTopics = loadTopics();
+        let isFetching = false;
+        let dragSrcIdx = null;
+
+        // ── Helpers ────────────────────────────────────────────────────────────
+        function todayStr() {
+            return new Date().toISOString().slice(0, 10);
+        }
+
+        function firstOfMonth() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
+        }
+
+        function loadTopics() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(STORAGE_TOPICS_KEY));
+                if (Array.isArray(saved) && saved.length > 0) return saved;
+            } catch (_) {}
+            return DEFAULT_TOPICS.map(t => t.label);
+        }
+
+        function saveTopics() {
+            localStorage.setItem(STORAGE_TOPICS_KEY, JSON.stringify(rankedTopics));
+        }
+
+        function topicIcon(label) {
+            return ICON_MAP[label] || 'bookmark-outline';
+        }
+
+        function loadCache() {
+            try {
+                return JSON.parse(localStorage.getItem(STORAGE_CACHE_KEY));
+            } catch (_) { return null; }
+        }
+
+        function saveCache(topics, papers) {
+            localStorage.setItem(STORAGE_CACHE_KEY, JSON.stringify({
+                date: todayStr(),
+                fetchedAt: new Date().toISOString(),
+                topics: [...topics],
+                papers
+            }));
+        }
+
+        function cacheValid(topics) {
+            const cache = loadCache();
+            if (!cache) return null;
+            if (cache.date !== todayStr()) return null;
+            if (JSON.stringify(topics) !== JSON.stringify(cache.topics)) return null;
+            return cache;
+        }
+
+        function paperUrl(paper) {
+            if (paper.doi) return paper.doi;
+            if (paper.primaryUrl) return paper.primaryUrl;
+            return paper.id || '#';
+        }
+
+        function formatAuthors(authors) {
+            if (!authors || authors.length === 0) return 'Unknown authors';
+            if (authors.length <= 3) return authors.map(a => a.name).join(', ');
+            return authors.slice(0, 3).map(a => a.name).join(', ') + ' et al.';
+        }
+
+        function truncateAbstract(text) {
+            if (!text) return 'No abstract available.';
+            return text.length > 220 ? text.slice(0, 220).trimEnd() + '…' : text;
+        }
+
+        function invertedIndexToText(invertedIndex) {
+            if (!invertedIndex) return null;
+            const entries = [];
+            for (const [word, positions] of Object.entries(invertedIndex)) {
+                for (const pos of positions) {
+                    entries.push({ pos, word });
+                }
+            }
+            entries.sort((a, b) => a.pos - b.pos);
+            return entries.map(e => e.word).join(' ');
+        }
+
+        function normalizePaper(raw, topic) {
+            const authors = (raw.authorships || []).map(a => ({
+                name: a.author ? a.author.display_name : 'Unknown'
+            }));
+            const abstract = invertedIndexToText(raw.abstract_inverted_index);
+            const loc = raw.primary_location;
+            const primaryUrl = loc && loc.landing_page_url ? loc.landing_page_url : null;
+            const venue = loc && loc.source ? loc.source.display_name : null;
+            return {
+                id: raw.id,
+                title: raw.title,
+                authors,
+                abstract,
+                citationCount: raw.cited_by_count || 0,
+                year: raw.publication_year,
+                publicationDate: raw.publication_date,
+                doi: raw.doi,
+                primaryUrl,
+                venue,
+                _topic: topic
+            };
+        }
+
+        function updateLastUpdated(isoStr) {
+            const el = document.getElementById('last-updated-text');
+            if (!el) return;
+            if (!isoStr) { el.textContent = 'Not yet fetched'; return; }
+            const d = new Date(isoStr);
+            const now = new Date();
+            const diffMin = Math.floor((now - d) / 60000);
+            let label;
+            if (diffMin < 1)       label = 'Just now';
+            else if (diffMin < 60) label = `${diffMin}m ago`;
+            else if (diffMin < 1440) {
+                const h = Math.floor(diffMin / 60);
+                label = `${h}h ago`;
+            } else {
+                label = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+            }
+            el.textContent = `Last updated: ${label}`;
+        }
+
+        function updatePapersCount(count) {
+            const el = document.getElementById('papers-count');
+            if (el) el.textContent = count > 0 ? `${count} paper${count !== 1 ? 's' : ''}` : '';
+        }
+
+        function escHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // ── Render Ranked Topic List ───────────────────────────────────────────
+        function renderTopicList() {
+            const list = document.getElementById('topic-list');
+            list.innerHTML = '';
+            rankedTopics.forEach((label, idx) => {
+                const li = document.createElement('li');
+                li.className = 'topic-item';
+                li.draggable = true;
+                li.dataset.idx = idx;
+                li.innerHTML = `
+                    <ion-icon name="reorder-three-outline" class="drag-handle"></ion-icon>
+                    <span class="topic-rank">${idx + 1}</span>
+                    <ion-icon name="${topicIcon(label)}" class="topic-icon"></ion-icon>
+                    <span class="topic-label">${escHtml(label)}</span>
+                    <div class="topic-actions">
+                        <button class="topic-btn" data-action="up" title="Move up" ${idx === 0 ? 'disabled style="opacity:0.3"' : ''}>
+                            <ion-icon name="chevron-up-outline"></ion-icon>
+                        </button>
+                        <button class="topic-btn" data-action="down" title="Move down" ${idx === rankedTopics.length - 1 ? 'disabled style="opacity:0.3"' : ''}>
+                            <ion-icon name="chevron-down-outline"></ion-icon>
+                        </button>
+                        <button class="topic-btn remove" data-action="remove" title="Remove topic">
+                            <ion-icon name="close-outline"></ion-icon>
+                        </button>
+                    </div>
+                `;
+
+                // Button clicks
+                li.querySelectorAll('.topic-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const action = btn.dataset.action;
+                        if (action === 'up' && idx > 0) moveTopic(idx, idx - 1);
+                        else if (action === 'down' && idx < rankedTopics.length - 1) moveTopic(idx, idx + 1);
+                        else if (action === 'remove') removeTopic(idx);
+                    });
+                });
+
+                // Drag events
+                li.addEventListener('dragstart', (e) => {
+                    dragSrcIdx = idx;
+                    li.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+                li.addEventListener('dragend', () => {
+                    li.classList.remove('dragging');
+                    dragSrcIdx = null;
+                    list.querySelectorAll('.topic-item').forEach(el => el.classList.remove('drag-over'));
+                });
+                li.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    li.classList.add('drag-over');
+                });
+                li.addEventListener('dragleave', () => {
+                    li.classList.remove('drag-over');
+                });
+                li.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    li.classList.remove('drag-over');
+                    const toIdx = parseInt(li.dataset.idx);
+                    if (dragSrcIdx !== null && dragSrcIdx !== toIdx) {
+                        moveTopic(dragSrcIdx, toIdx);
+                    }
+                });
+
+                list.appendChild(li);
+            });
+        }
+
+        function moveTopic(fromIdx, toIdx) {
+            const item = rankedTopics.splice(fromIdx, 1)[0];
+            rankedTopics.splice(toIdx, 0, item);
+            saveTopics();
+            renderTopicList();
+            fetchAndRender(false);
+        }
+
+        function removeTopic(idx) {
+            rankedTopics.splice(idx, 1);
+            saveTopics();
+            renderTopicList();
+            fetchAndRender(false);
+        }
+
+        function addTopic(label) {
+            const trimmed = label.trim();
+            if (!trimmed) return;
+            // Don't add duplicates (case-insensitive check)
+            if (rankedTopics.some(t => t.toLowerCase() === trimmed.toLowerCase())) return;
+            rankedTopics.push(trimmed);
+            saveTopics();
+            renderTopicList();
+            fetchAndRender(false);
+        }
+
+        // ── Skeleton ───────────────────────────────────────────────────────────
+        function renderSkeletons(count = 5) {
+            const grid = document.getElementById('papers-grid');
+            grid.innerHTML = Array.from({ length: count }).map(() => `
+                <div class="skeleton-card" aria-hidden="true">
+                    <div class="skel skel-title"></div>
+                    <div class="skel skel-title-2"></div>
+                    <div class="skel skel-author"></div>
+                    <div class="skel skel-line"></div>
+                    <div class="skel skel-line"></div>
+                    <div class="skel skel-line short"></div>
+                    <div class="skel-divider"></div>
+                    <div class="skel skel-meta"></div>
+                </div>
+            `).join('');
+            updatePapersCount(0);
+        }
+
+        // ── Render Papers ──────────────────────────────────────────────────────
+        function renderPapers(papers) {
+            const grid = document.getElementById('papers-grid');
+            if (!papers || papers.length === 0) {
+                grid.innerHTML = `
+                    <div class="state-box">
+                        <ion-icon name="document-text-outline"></ion-icon>
+                        <p>No papers found for your selected topics.<br>Try adjusting your interests above.</p>
+                    </div>`;
+                updatePapersCount(0);
+                return;
+            }
+            grid.innerHTML = papers.map((p, i) => `
+                <div class="paper-card" style="animation-delay:${i * 55}ms">
+                    <div class="card-top">
+                        <a class="paper-title" href="${escHtml(paperUrl(p))}" target="_blank" rel="noopener noreferrer">
+                            ${escHtml(p.title || 'Untitled')}
+                        </a>
+                        <span class="topic-badge">${escHtml(p._topic || '')}</span>
+                    </div>
+                    <div class="paper-authors">
+                        <ion-icon name="people-outline"></ion-icon>
+                        ${escHtml(formatAuthors(p.authors))}
+                    </div>
+                    <div class="paper-abstract">${escHtml(truncateAbstract(p.abstract))}</div>
+                    <div class="card-meta">
+                        ${p.venue ? `<span class="meta-item">
+                            <ion-icon name="library-outline"></ion-icon>
+                            ${escHtml(p.venue)}
+                        </span>` : ''}
+                        <span class="meta-item">
+                            <ion-icon name="calendar-outline"></ion-icon>
+                            ${escHtml(String(p.year || p.publicationDate || 'n/d'))}
+                        </span>
+                        <span class="meta-item">
+                            <ion-icon name="bookmarks-outline"></ion-icon>
+                            ${Number(p.citationCount || 0).toLocaleString()} citations
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+            updatePapersCount(papers.length);
+        }
+
+        function renderEmpty() {
+            const grid = document.getElementById('papers-grid');
+            grid.innerHTML = `
+                <div class="state-box">
+                    <ion-icon name="search-outline"></ion-icon>
+                    <p>No topics added. Add research interests above to discover papers.</p>
+                </div>`;
+            updatePapersCount(0);
+        }
+
+        function renderError(msg) {
+            const grid = document.getElementById('papers-grid');
+            grid.innerHTML = `
+                <div class="state-box">
+                    <ion-icon name="cloud-offline-outline"></ion-icon>
+                    <p>${escHtml(msg)}</p>
+                    <button class="btn-retry" id="btn-retry">
+                        <ion-icon name="refresh-outline"></ion-icon> Try again
+                    </button>
+                </div>`;
+            document.getElementById('btn-retry')?.addEventListener('click', () => fetchAndRender(true));
+            updatePapersCount(0);
+        }
+
+        // ── Fetch (OpenAlex API) ───────────────────────────────────────────────
+        async function fetchPapersForTopic(topic) {
+            const searchQuery = encodeURIComponent(topic);
+            const fromDate = firstOfMonth();
+            const url = `${API_BASE}?search=${searchQuery}&filter=primary_location.source.id:${TOP_SOURCES},from_publication_date:${fromDate}&sort=cited_by_count:desc&per_page=10&select=${FIELDS}&mailto=zhshu1997@gmail.com`;
+            const res = await fetch(url);
+            if (res.status === 429) throw new Error('rate_limit');
+            if (!res.ok) throw new Error(`api_error_${res.status}`);
+            const data = await res.json();
+            return (data.results || []).map(p => normalizePaper(p, topic));
+        }
+
+        async function fetchAllTopics(topics) {
+            // Fetch sequentially, respecting priority order
+            // Higher-priority topics (lower index) get more paper slots
+            const perTopic = {};
+            for (let i = 0; i < topics.length; i++) {
+                const topic = topics[i];
+                const papers = await fetchPapersForTopic(topic);
+                perTopic[topic] = papers;
+                if (i < topics.length - 1) {
+                    await new Promise(r => setTimeout(r, 200));
+                }
+            }
+
+            // Priority-weighted selection:
+            // Allocate paper slots proportionally — top priority gets most
+            // Weight: topic at index 0 gets weight N, index 1 gets N-1, etc.
+            const n = topics.length;
+            const totalWeight = n * (n + 1) / 2;
+            const seen = new Set();
+            const selected = [];
+
+            for (let i = 0; i < topics.length && selected.length < 5; i++) {
+                const topic = topics[i];
+                const weight = n - i;
+                const slots = Math.max(1, Math.round((weight / totalWeight) * 5));
+                const candidates = (perTopic[topic] || []).filter(p => {
+                    if (!p.id || seen.has(p.id)) return false;
+                    seen.add(p.id);
+                    return true;
+                });
+                // Take up to 'slots' papers, sorted by citations
+                candidates.sort((a, b) => (b.citationCount || 0) - (a.citationCount || 0));
+                selected.push(...candidates.slice(0, slots));
+            }
+
+            // If we have fewer than 5, fill from remaining papers across all topics
+            if (selected.length < 5) {
+                for (const topic of topics) {
+                    const remaining = (perTopic[topic] || []).filter(p => p.id && !seen.has(p.id));
+                    remaining.sort((a, b) => (b.citationCount || 0) - (a.citationCount || 0));
+                    for (const p of remaining) {
+                        if (selected.length >= 5) break;
+                        seen.add(p.id);
+                        selected.push(p);
+                    }
+                    if (selected.length >= 5) break;
+                }
+            }
+
+            return selected.slice(0, 5);
+        }
+
+        function setRefreshSpinner(active) {
+            const btn = document.getElementById('btn-refresh');
+            if (!btn) return;
+            btn.classList.toggle('spinning', active);
+            btn.disabled = active;
+        }
+
+        async function fetchAndRender(bypassCache) {
+            if (isFetching) return;
+
+            if (rankedTopics.length === 0) {
+                renderEmpty();
+                updateLastUpdated(null);
+                return;
+            }
+
+            if (!bypassCache) {
+                const hit = cacheValid(rankedTopics);
+                if (hit) {
+                    renderPapers(hit.papers);
+                    updateLastUpdated(hit.fetchedAt);
+                    return;
+                }
+            }
+
+            isFetching = true;
+            setRefreshSpinner(true);
+            renderSkeletons(5);
+            updateLastUpdated(null);
+
+            try {
+                const papers = await fetchAllTopics(rankedTopics);
+                saveCache(rankedTopics, papers);
+                renderPapers(papers);
+                const cache = loadCache();
+                updateLastUpdated(cache && cache.fetchedAt);
+            } catch (err) {
+                if (err.message === 'rate_limit') {
+                    renderError('Too many requests. Please wait a moment and try again.');
+                } else if (err.name === 'TypeError') {
+                    renderError('Unable to fetch papers. Please check your connection and try again.');
+                } else {
+                    renderError('Unable to fetch papers. Please try again later.');
+                }
+            } finally {
+                isFetching = false;
+                setRefreshSpinner(false);
+            }
+        }
+
+        // ── Init ───────────────────────────────────────────────────────────────
+        renderTopicList();
+
+        // Add topic via input
+        const addInput = document.getElementById('add-topic-input');
+        const addBtn   = document.getElementById('btn-add');
+        addBtn.addEventListener('click', () => {
+            addTopic(addInput.value);
+            addInput.value = '';
+        });
+        addInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                addTopic(addInput.value);
+                addInput.value = '';
+            }
+        });
+
+        // Show cached timestamp immediately if available
+        const initialCache = loadCache();
+        if (initialCache && initialCache.fetchedAt) {
+            updateLastUpdated(initialCache.fetchedAt);
+        } else {
+            updateLastUpdated(null);
+        }
+
+        document.getElementById('btn-refresh').addEventListener('click', () => {
+            if (!isFetching) fetchAndRender(true);
+        });
+        fetchAndRender(false);
+    })();
+    </script>
+
+</body>
+</html>
