@@ -305,11 +305,13 @@
                 <p style="margin:6px 0;"><strong>A) Anthropic API key</strong> — paste an <code>sk-ant-…</code> key, leave Base URL blank. Billed per token at console.anthropic.com (separate from a Claude.ai subscription).</p>
                 <p style="margin:6px 0;"><strong>B) Claude.ai subscription via CLIProxyAPI</strong> — to avoid per-token billing:</p>
                 <ol style="margin:6px 0 0; padding-left:20px;">
-                    <li>Install &amp; run <code>CLIProxyAPI</code> locally (defaults to <code>http://127.0.0.1:8317</code>).</li>
-                    <li>Log in with your Claude Pro/Max account (OAuth) so it uses your subscription.</li>
-                    <li>Add an <code>api-keys</code> entry in its config.</li>
-                    <li>In the Claude card: <strong>API Key</strong> = that proxy key, <strong>Base URL</strong> = <code>http://127.0.0.1:8317</code>, then Save.</li>
+                    <li>Install: <code>brew install cliproxyapi</code> (macOS), or use the Linux one-liner / Docker from the docs.</li>
+                    <li>Log in with your Claude account: run the proxy's Claude login (e.g. <code>cli-proxy-api --login</code>) and authorize in the browser — this saves your Pro/Max OAuth token. Exact command: see docs link below.</li>
+                    <li>Start it: <code>brew services start cliproxyapi</code> — serves <code>http://127.0.0.1:8317</code>.</li>
+                    <li>Add an <code>api-keys</code> entry in <code>config.yaml</code>.</li>
+                    <li>In the Claude card above: <strong>API Key</strong> = that key, <strong>Base URL</strong> = <code>http://127.0.0.1:8317</code> → Save.</li>
                 </ol>
+                <p style="margin:8px 0 0;"><a href="https://help.router-for.me/" target="_blank" rel="noopener">CLIProxyAPI docs &amp; exact login command ↗</a></p>
                 <p style="margin:8px 0 0; color:#888;">CLIProxyAPI only works while running on this machine, so option B is local-only.</p>
             </details>
         </div>
