@@ -293,11 +293,25 @@
 <body>
 
     <div id="authScreen">
-        <div class="login-box">
+        <div class="login-box" style="width:420px; text-align:left;">
             <h2 style="text-align: center;">Admin Login</h2>
             <div class="form-group"><input type="email" id="adminEmail" placeholder="Email"></div>
             <div class="form-group"><input type="password" id="adminPassword" placeholder="Password"></div>
             <button class="btn btn-primary" style="width:100%" onclick="handleLogin()">Sign In</button>
+
+            <details style="margin-top:22px; font-size:0.82em; color:#555; line-height:1.6;">
+                <summary style="cursor:pointer; font-weight:600; color:#2c3e50;">Using Claude to parse papers &amp; chat?</summary>
+                <p style="margin:10px 0 6px;">After signing in, open the <strong>Papers</strong> tab and fill the Claude card. Two ways to power it:</p>
+                <p style="margin:6px 0;"><strong>A) Anthropic API key</strong> — paste an <code>sk-ant-…</code> key, leave Base URL blank. Billed per token at console.anthropic.com (separate from a Claude.ai subscription).</p>
+                <p style="margin:6px 0;"><strong>B) Claude.ai subscription via CLIProxyAPI</strong> — to avoid per-token billing:</p>
+                <ol style="margin:6px 0 0; padding-left:20px;">
+                    <li>Install &amp; run <code>CLIProxyAPI</code> locally (defaults to <code>http://127.0.0.1:8317</code>).</li>
+                    <li>Log in with your Claude Pro/Max account (OAuth) so it uses your subscription.</li>
+                    <li>Add an <code>api-keys</code> entry in its config.</li>
+                    <li>In the Claude card: <strong>API Key</strong> = that proxy key, <strong>Base URL</strong> = <code>http://127.0.0.1:8317</code>, then Save.</li>
+                </ol>
+                <p style="margin:8px 0 0; color:#888;">CLIProxyAPI only works while running on this machine, so option B is local-only.</p>
+            </details>
         </div>
     </div>
 
