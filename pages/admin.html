@@ -318,8 +318,22 @@
         </div>
 
         <div class="container">
+            <div class="card" style="background: #eef6ff; border: 1px solid #cfe3ff;">
+                <label>🤖 Claude (Anthropic) API Key — used to parse papers & chat</label>
+                <div class="row">
+                    <input type="password" id="anthropicKey" placeholder="sk-ant-...">
+                    <select id="claudeModel" style="max-width:200px;">
+                        <option value="claude-opus-4-8">Opus 4.8 (best)</option>
+                        <option value="claude-sonnet-4-6">Sonnet 4.6 (balanced)</option>
+                        <option value="claude-haiku-4-5">Haiku 4.5 (cheapest)</option>
+                    </select>
+                    <button class="btn btn-warning" onclick="saveAnthropicKey()">Save Key</button>
+                </div>
+                <p style="font-size:0.8em; color:#666; margin:8px 0 0;">Get a key at console.anthropic.com. Billed per token (separate from your Claude.ai subscription). The key is stored only in this browser.</p>
+            </div>
+
             <div class="card" style="background: #fff8e1; border: 1px solid #ffe0b2;">
-                <label>🔑 OpenAI API Key (Required for Summaries & Embeddings)</label>
+                <label>🔑 OpenAI API Key (optional — only for semantic-search embeddings)</label>
                 <div class="row">
                     <input type="password" id="apiKey" placeholder="sk-...">
                     <button class="btn btn-warning" onclick="saveKey()">Save Key</button>
@@ -335,12 +349,16 @@
 
             <div id="tab-papers" class="tab-content active">
                 <div class="card">
-                    <h2>Add Paper (PDF + AI)</h2>
+                    <h2>Add Paper (PDF / Web + Claude)</h2>
                     <div class="drag-area" onclick="document.getElementById('pdfInput').click()">
                         <h3>Click to Upload PDF</h3>
-                        <p style="font-size:0.85em; color:#777;">I'll extract title, date, and summary automatically.
+                        <p style="font-size:0.85em; color:#777;">Claude will extract title, date, topic, and summary automatically.
                         </p>
                         <input type="file" id="pdfInput" accept=".pdf" hidden onchange="handlePdfUpload(this)">
+                    </div>
+                    <div class="row" style="margin-bottom:15px;">
+                        <input type="text" id="webUrl" placeholder="…or paste a paper URL (arXiv, ACM, OpenReview)">
+                        <button class="btn btn-primary" style="white-space:nowrap;" onclick="fetchFromWeb()">Fetch &amp; Parse</button>
                     </div>
                     <div id="aiStatus" class="loading-text"></div>
                     <div class="form-group"><label>Title</label><input type="text" id="p_title"></div>
@@ -356,6 +374,16 @@
                     <div class="form-group"><label>Summary</label><textarea id="p_summary"></textarea></div>
                     <button class="btn btn-success" onclick="savePaperToDb()">Save Paper</button>
                 </div>
+
+                <div class="card" id="chatCard" style="display:none;">
+                    <h2>💬 Chat with Claude about this paper</h2>
+                    <div id="chatMessages" style="max-height:360px; overflow-y:auto; padding:5px 0; margin-bottom:12px;"></div>
+                    <div class="row">
+                        <input type="text" id="chatInput" placeholder="Ask anything about the paper…" onkeydown="if(event.key==='Enter')sendChat()">
+                        <button class="btn btn-primary" style="white-space:nowrap;" onclick="sendChat()">Send</button>
+                    </div>
+                </div>
+
                 <div class="card">
                     <h2>Import CSV</h2>
                     <input type="file" id="csvInput" accept=".csv" onchange="handleCsvUpload(this)">
@@ -427,6 +455,10 @@
             const { data: { session } } = await client.auth.getSession();
             if (session) toggleUI(true); else toggleUI(false);
             document.getElementById('apiKey').value = localStorage.getItem('openai_key') || '';
+            document.getElementById('anthropicKey').value = localStorage.getItem('anthropic_key') || '';
+            const savedModel = localStorage.getItem('claude_model');
+            if (savedModel) document.getElementById('claudeModel').value = savedModel;
+            document.getElementById('claudeModel').addEventListener('change', e => localStorage.setItem('claude_model', e.target.value));
         });
 
         async function handleLogin() {
@@ -460,6 +492,120 @@
         }
 
         function saveKey() { localStorage.setItem('openai_key', document.getElementById('apiKey').value); alert('Key saved!'); }
+        function saveAnthropicKey() { localStorage.setItem('anthropic_key', document.getElementById('anthropicKey').value.trim()); alert('Claude key saved!'); }
+
+        // --- CLAUDE (ANTHROPIC) INFRA ---
+        let currentPaperText = '';   // full text of the paper currently being added (PDF or web)
+        let chatHistory = [];        // [{role, content}] for the chat conversation
+
+        function setAiStatus(msg) { document.getElementById('aiStatus').textContent = msg; }
+
+        async function callClaude(messages, { system, max_tokens = 1024 } = {}) {
+            const key = localStorage.getItem('anthropic_key');
+            if (!key) throw new Error('Set your Claude (Anthropic) API key first.');
+            const model = document.getElementById('claudeModel').value || 'claude-opus-4-8';
+            const body = { model, max_tokens, messages };
+            if (system) body.system = system;
+            const res = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': key,
+                    'anthropic-version': '2023-06-01',
+                    'anthropic-dangerous-direct-browser-access': 'true'
+                },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error?.message || ('HTTP ' + res.status));
+            return data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+        }
+
+        async function extractPdfText(file, maxPages = 40) {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+            let text = '';
+            const n = Math.min(pdf.numPages, maxPages);
+            for (let i = 1; i <= n; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                text += content.items.map(it => it.str).join(' ') + '\n';
+            }
+            return text;
+        }
+
+        async function parsePaperText(text) {
+            const prompt = `You are given the text of an academic paper. Return ONLY a JSON object (no markdown, no commentary) with these keys: "title", "conference", "date_published" (YYYY-MM-DD or ""), "topic" (2-3 words), "summary" (2-3 sentences).\n\nPaper text:\n${text.substring(0, 12000)}`;
+            const out = await callClaude([{ role: 'user', content: prompt }], { max_tokens: 800 });
+            const m = out.match(/\{[\s\S]*\}/);
+            return JSON.parse(m ? m[0] : out);
+        }
+
+        function fillPaperForm(r) {
+            document.getElementById('p_title').value = r.title || '';
+            document.getElementById('p_conf').value = r.conference || '';
+            document.getElementById('p_topic').value = r.topic || '';
+            document.getElementById('p_summary').value = r.summary || '';
+            if (r.date_published) document.getElementById('p_date_pub').value = r.date_published;
+        }
+
+        function enableChat() {
+            document.getElementById('chatCard').style.display = 'block';
+            chatHistory = [];
+            document.getElementById('chatMessages').innerHTML = '';
+        }
+
+        function appendChat(role, text) {
+            const wrap = document.getElementById('chatMessages');
+            const el = document.createElement('div');
+            el.style.cssText = 'margin:6px 0; padding:8px 12px; border-radius:8px; white-space:pre-wrap; line-height:1.5; ' +
+                (role === 'user' ? 'background:#2c3e50; color:#fff; text-align:right; margin-left:40px;'
+                                 : 'background:#f0f0f0; color:#333; margin-right:40px;');
+            el.textContent = text;
+            wrap.appendChild(el);
+            wrap.scrollTop = wrap.scrollHeight;
+            return el;
+        }
+
+        async function sendChat() {
+            const inp = document.getElementById('chatInput');
+            const q = inp.value.trim();
+            if (!q) return;
+            if (!currentPaperText) return alert('Upload or fetch a paper first.');
+            appendChat('user', q);
+            inp.value = '';
+            chatHistory.push({ role: 'user', content: q });
+            const bubble = appendChat('assistant', '…');
+            try {
+                const system = [{
+                    type: 'text',
+                    text: `You are a helpful research assistant. Answer questions about the following paper accurately and concisely. If something is not covered by the paper, say so.\n\n--- PAPER START ---\n${currentPaperText.substring(0, 60000)}\n--- PAPER END ---`,
+                    cache_control: { type: 'ephemeral' }
+                }];
+                const ans = await callClaude(chatHistory, { system, max_tokens: 1500 });
+                bubble.textContent = ans;
+                chatHistory.push({ role: 'assistant', content: ans });
+            } catch (e) {
+                bubble.textContent = 'Error: ' + e.message;
+                chatHistory.pop();
+            }
+        }
+
+        async function fetchFromWeb() {
+            const url = document.getElementById('webUrl').value.trim();
+            if (!url) return alert('Paste a paper URL first.');
+            setAiStatus('Fetching page...');
+            try {
+                const res = await fetch('https://r.jina.ai/' + url);
+                if (!res.ok) throw new Error('Could not read the page (HTTP ' + res.status + '). The site may block automated reading.');
+                currentPaperText = await res.text();
+                document.getElementById('p_link').value = url;
+                setAiStatus('Analyzing with Claude...');
+                fillPaperForm(await parsePaperText(currentPaperText));
+                setAiStatus('Done! Review and Save — or chat below.');
+                enableChat();
+            } catch (e) { setAiStatus('Error: ' + e.message); }
+        }
 
         // --- CV UPLOAD LOGIC ---
         async function uploadCV() {
@@ -564,29 +710,14 @@
         async function handlePdfUpload(input) {
             const file = input.files[0];
             if (!file) return;
-            const apiKey = localStorage.getItem('openai_key');
-            if (!apiKey) return alert("Please set OpenAI API Key first.");
-            document.getElementById('aiStatus').textContent = "Reading PDF...";
+            setAiStatus("Reading PDF...");
             try {
-                const arrayBuffer = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
-                let text = "";
-                for (let i = 1; i <= Math.min(pdf.numPages, 2); i++) {
-                    const page = await pdf.getPage(i);
-                    const content = await page.getTextContent();
-                    text += content.items.map(item => item.str).join(' ') + "\n";
-                }
-                document.getElementById('aiStatus').textContent = "AI Analysis...";
-                const res = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, body: JSON.stringify({ model: "gpt-3.5-turbo", messages: [{ role: "user", content: `Analyze paper. JSON only: { "title": "", "conference": "", "date_published": "YYYY-MM-DD", "topic": "2-3 words", "summary": "1 sentence" }. Text: ${text.substring(0, 3000)}` }], temperature: 0 }) });
-                const data = await res.json();
-                const result = JSON.parse(data.choices[0].message.content);
-                document.getElementById('p_title').value = result.title || "";
-                document.getElementById('p_conf').value = result.conference || "";
-                document.getElementById('p_topic').value = result.topic || "";
-                document.getElementById('p_summary').value = result.summary || "";
-                if (result.date_published) document.getElementById('p_date_pub').value = result.date_published;
-                document.getElementById('aiStatus').textContent = "Done! Click Save.";
-            } catch (e) { document.getElementById('aiStatus').textContent = "Error: " + e.message; }
+                currentPaperText = await extractPdfText(file);
+                setAiStatus("Analyzing with Claude...");
+                fillPaperForm(await parsePaperText(currentPaperText));
+                setAiStatus("Done! Review and Save — or chat below.");
+                enableChat();
+            } catch (e) { setAiStatus("Error: " + e.message); }
         }
 
         async function savePaperToDb() {
