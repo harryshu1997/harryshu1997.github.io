@@ -306,7 +306,7 @@
                 <p style="margin:6px 0;"><strong>B) Claude.ai subscription via CLIProxyAPI</strong> — to avoid per-token billing:</p>
                 <ol style="margin:6px 0 0; padding-left:20px;">
                     <li>Install: <code>brew install cliproxyapi</code> (macOS), or use the Linux one-liner / Docker from the docs.</li>
-                    <li>Log in with your Claude account: run the proxy's Claude login (e.g. <code>cli-proxy-api --login</code>) and authorize in the browser — this saves your Pro/Max OAuth token. Exact command: see docs link below.</li>
+                    <li>Log in with your Claude account: run <code>cliproxyapi --claude-login</code> and authorize in the browser — this saves your Pro/Max OAuth token. (Plain <code>--login</code> is the Gemini flow; don't use it.)</li>
                     <li>Start it: <code>brew services start cliproxyapi</code> — serves <code>http://127.0.0.1:8317</code>.</li>
                     <li>Add an <code>api-keys</code> entry in <code>config.yaml</code>.</li>
                     <li>In the Claude card above: <strong>API Key</strong> = that key, <strong>Base URL</strong> = <code>http://127.0.0.1:8317</code> → Save.</li>
